@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="25" height="28.26" viewBox="0 0 25 28.26">
+  <g id="Notification" transform="translate(0.5 0.5)">
+    <path id="Combined-Shape" d="M15.671,4.247,15.09,4.16l.04-.617V2.165a.632.632,0,1,0-1.263,0V3.543l.042.617-.581.088A8.515,8.515,0,0,0,6.289,12.8v8.644H4.395a2,2,0,0,0,0,3.989H24.605a2,2,0,0,0,0-3.989H22.711V12.8a8.515,8.515,0,0,0-7.039-8.556Z" transform="translate(-2.5 -1.5)" fill="none" stroke="#000" stroke-width="1" fill-rule="evenodd"/>
+    <path id="Oval" d="M10,20a2.66,2.66,0,0,0,5.319,0" transform="translate(-0.66 4.601)" fill="none" stroke="#000" stroke-width="1" fill-rule="evenodd"/>
+  </g>
+</svg>
