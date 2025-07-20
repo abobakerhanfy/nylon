@@ -23,8 +23,8 @@ class ControllerHomeWidget extends HomeWidgetController {
   final _loginController = Get.find<ControllerLogin>(); // ✅ هنا
 
   List<Widget> screens = [
-    const ScreenHome(),
-    const ViewcCategories(),
+    ScreenHome(),
+    ViewcCategories(),
     GetBuilder<ControllerCart>(
         init: ControllerCart(),
         builder: (_controller) {

@@ -15,11 +15,9 @@ import 'package:nylon/features/balance/presentation/controller/controller_balanc
 import 'package:nylon/features/cart/presentation/screens/widgets/button_on_cart.dart';
 import 'package:nylon/features/cart/presentation/screens/widgets/row_invoice.dart';
 import 'package:nylon/features/payment/data/models/payment_model.dart';
-import 'package:nylon/features/payment/presentation/controller/controller_payment.dart';
 import 'package:nylon/features/payment/presentation/screens/widgets/Payment_card_fild.dart';
 import 'package:nylon/features/payment/presentation/screens/widgets/payment_Image.dart';
 import 'package:nylon/core/url/url_api.dart';
-import 'package:nylon/core/services/services.dart';
 
 class SendOrderBalance extends StatefulWidget {
   const SendOrderBalance({super.key});
@@ -30,17 +28,13 @@ class SendOrderBalance extends StatefulWidget {
 
 class _SendOrderBalanceState extends State<SendOrderBalance> {
   final ControllerBalance _controller = Get.find();
-
   @override
   void initState() {
     super.initState();
-    final MyServices myServices = Get.find();
-    myServices.sharedPreferences.setString('UserId', '6701');
-    final customerId =
-        myServices.sharedPreferences.getString("UserId") ?? "6702";
-
+    final customerId = _controller.customerId;
+    print("🚀 from SendOrderBalance: customerId = $customerId");
     WidgetsBinding.instance.addPostFrameCallback((_) async {
-      await _controller.getPayment(); // ✅ هذا هو السطر الأساسي المطلوب
+      await _controller.getPayment(customerId);
       print(_controller.paymentsDataList.map((e) => e.code));
     });
   }
@@ -101,52 +95,46 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
                             width: MediaQuery.of(context).size.width * 0.80,
                             label: '36'.tr,
                             onTap: () async {
-                              if ((_controller.selectCodePayment ?? "")
-                                  .isEmpty) {
+                              if (_controller.selectCodePayment.isEmpty) {
                                 Get.snackbar(
-                                    "تنبيه", "الرجاء اختيار وسيلة دفع أولاً");
+                                    "تنبيه", "الرجاء اختيار وسيلة دفع أولاً",
+                                    snackPosition: SnackPosition.BOTTOM,
+                                    duration: const Duration(seconds: 2));
                                 return;
                               }
 
-                              // ✅ املأ الحقول إذا كانت فارغة
-                              if (_controller.cFirstName.text.trim().isEmpty) {
-                                _controller.cFirstName.text = "شحن";
-                              }
-                              if (_controller.cLastName.text.trim().isEmpty) {
-                                _controller.cLastName.text = "رصيد";
-                              }
+                              await controller.sendDataUser();
 
-                              if (controller.statusRequestSendOrderB ==
-                                  StatusRequest.loading) return;
-
-                              try {
-                                await controller
-                                    .sendDataUser(); // ✅ إرسال البيانات
-
-                                if (controller.statusRequestSendDUser !=
-                                    StatusRequest.success) {
-                                  newCustomDialog(
-                                    body: PrimaryButton(
+                              if (_controller.statusRequestSendDUser !=
+                                  StatusRequest.success) {
+                                newCustomDialog(
+                                  body: SizedBox(
+                                    height: 40,
+                                    child: PrimaryButton(
                                       label: 'موافق',
-                                      onTap: () => Get.back(),
+                                      onTap: () {
+                                        Get.back();
+                                      },
                                     ),
-                                    title:
-                                        'الرجاء اضافة البيانات حتي يتم اضافة الرصيد',
-                                    dialogType: DialogType.error,
-                                  );
-                                  return;
-                                }
-
-                                if (_controller.selectCodePayment ==
-                                    "myfatoorah_pg") {
-                                  await _controller
-                                      .processBalanceWithMyFatoorah();
-                                }
-                              } catch (e) {
-                                Get.snackbar(
-                                    "خطأ", "حدث خطأ أثناء تنفيذ العملية");
+                                  ),
+                                  title:
+                                      'الرجاء اضافة البيانات حتي يتم اضافة الرصيد',
+                                  dialogType: DialogType.error,
+                                );
+                                return;
                               }
-                            }),
+
+                              await _controller.selectPayment(
+                                paymentCode: _controller.selectCodePayment,
+                              );
+
+                              if (_controller.selectCodePayment ==
+                                  "myfatoorah_pg") {
+                                await _controller
+                                    .processBalancePaymentWithMyFatoorah();
+                              }
+                            },
+                          ),
                   ],
                 );
         }),
@@ -155,17 +143,13 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
       body: ListView(
         padding: const EdgeInsets.all(12),
         children: [
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Text('86'.tr,
               style: Theme.of(context)
                   .textTheme
                   .bodyMedium
                   ?.copyWith(color: Colors.black)),
-          const SizedBox(
-            height: 10,
-          ),
+          const SizedBox(height: 10),
           Form(
             key: _controller.formAddDataUser,
             child: Row(
@@ -178,9 +162,7 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
                       textInputType: TextInputType.name,
                       controller: _controller.cFirstName),
                 ),
-                const SizedBox(
-                  width: 15,
-                ),
+                const SizedBox(width: 15),
                 SizedBox(
                   width: MediaQuery.of(context).size.width * 0.45,
                   child: TextFildAddess(
@@ -192,20 +174,11 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
               ],
             ),
           ),
-          SizedBox(
-            height: 20,
-          ),
-          GetBuilder<ControllerBalance>(builder: (controllerPayment) {
-            print("🟢 selectCodePayment => ${_controller.selectCodePayment}");
-            print("🟢 paymentsDataList => ${_controller.paymentsDataList}");
-            print(
-                "🟢 balancePaymentModel => ${_controller.balancePaymentModel}");
-            print(
-                "🟢 balancePaymentModel.orderId => ${_controller.balancePaymentModel?.orderId}");
-
+          SizedBox(height: 20),
+          GetBuilder<ControllerBalance>(builder: (controller) {
             return HandlingDataView(
-              statusRequest: controllerPayment.statusRequestGetPayment ??
-                  StatusRequest.loading,
+              statusRequest:
+                  controller.statusRequestGetPayment ?? StatusRequest.loading,
               widget: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -225,16 +198,13 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
                       physics: const NeverScrollableScrollPhysics(),
                       separatorBuilder: (context, i) => SizedBox(
                           height: MediaQuery.of(context).size.height * 0.02),
-                      itemCount: controllerPayment.paymentsDataList.length ?? 0,
+                      itemCount: controller.paymentsDataList.length ?? 0,
                       itemBuilder: (context, i) {
-                        return controllerPayment.paymentsDataList[i].code ==
+                        return controller.paymentsDataList[i].code ==
                                 "myfatoorah_pg"
                             ? ContainerPaymentDataBalance(
-                                codePayment:
-                                    controllerPayment.selectCodePayment,
-                                paymentsData:
-                                    controllerPayment.paymentsDataList[i],
-                                balanceController: _controller,
+                                codePayment: controller.selectCodePayment,
+                                paymentsData: controller.paymentsDataList[i],
                               )
                             : SizedBox.shrink();
                       },
@@ -243,7 +213,7 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
                 ],
               ),
               onRefresh: () {
-                controllerPayment.getPayment();
+                controller.getPayment();
               },
             );
           }),
@@ -256,32 +226,22 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
 class ContainerPaymentDataBalance extends StatelessWidget {
   final PaymentsData paymentsData;
   final String? codePayment;
-  final ControllerBalance balanceController;
 
   const ContainerPaymentDataBalance({
     super.key,
     required this.paymentsData,
     this.codePayment,
-    required this.balanceController,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ControllerBalance>(
       builder: (controller) {
-        print(
-            "🚀 ContainerPaymentDataBalance => code: ${paymentsData.code}, selected: ${controller.selectCodePayment}");
-
         return InkWell(
           onTap: () {
-            print(paymentsData.images?.length ?? 0);
-            // استخدام ControllerBalance بدلاً من ControllerPayment لتحديد الكود المحدد
-            balanceController.selectCodeBalance(
+            controller.selectCodeBalance(
                 code: paymentsData.code ?? '',
                 title: paymentsData.separatedText ?? '');
-            // أو يمكن تحديث الكود المحدد مباشرة في balanceController
-            balanceController.selectCodePayment = paymentsData.code;
-            balanceController.update();
           },
           child: Container(
             padding: const EdgeInsets.all(8),

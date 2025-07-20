@@ -46,18 +46,18 @@ List<GetPage> routes = [
       page: () => const BottomBar(),
       binding: HomeBiding(),
       transition: Transition.circularReveal),
-  GetPage(name: NamePages.pOneProduct, page: () => const ViewOneProduct()),
+  GetPage(name: NamePages.pOneProduct, page: () => ViewOneProduct()),
   GetPage(
       name: NamePages.pOneCategory,
-      page: () => const ViewOneCategory(),
+      page: () => ViewOneCategory(),
       binding: ControllerOneCategoryBiding()),
   GetPage(name: NamePages.pCart, page: () => const ScreenCart()),
   GetPage(name: NamePages.pLanguage, page: () => Language()),
-  GetPage(name: NamePages.pMyOrders, page: () => const MyOrders()),
+  GetPage(name: NamePages.pMyOrders, page: () => MyOrders()),
   GetPage(
       name: NamePages.pReplacementAndReturn,
       page: () => const ReplacementAndReturn()),
-  GetPage(name: NamePages.pMyAddresses, page: () => const MyAddresses()),
+  GetPage(name: NamePages.pMyAddresses, page: () => MyAddresses()),
   GetPage(name: NamePages.pAddAddress, page: () => AddAddress()),
   GetPage(name: NamePages.pOrderDetails, page: () => OrderDetails()),
   GetPage(
@@ -66,7 +66,7 @@ List<GetPage> routes = [
   ),
   GetPage(
       name: NamePages.pViewDetailsOrderReturned,
-      page: () => const ViewDetailsOrderReturned()),
+      page: () => ViewDetailsOrderReturned()),
   GetPage(name: NamePages.pSendComplaints, page: () => SendComplaints()),
   GetPage(
       name: NamePages.pSendNumerOrder, page: () => SendNumerOrderForTracking()),
@@ -75,21 +75,19 @@ List<GetPage> routes = [
       page: () => const TrackTheShipmentDetails()),
   GetPage(
       name: NamePages.pMyCoupons,
-      page: () => const MyCoupons(),
+      page: () => MyCoupons(),
       binding: ControllerCouponBiding()),
   GetPage(
       name: NamePages.pViewBalance,
       page: () => ViewBalance(),
       binding: ControllerBalanceBiding()),
   GetPage(
-      name: NamePages.pAddAddressShipping,
-      page: () => const AddAddressShipping()),
+      name: NamePages.pAddAddressShipping, page: () => AddAddressShipping()),
   GetPage(
       name: NamePages.pVerificationUserCart,
       page: () => VerificationUserCart()),
   GetPage(name: NamePages.pRegister, page: () => RegisterScreen()),
   GetPage(name: NamePages.pUpdataAddress, page: () => UpdataAddress()),
-  GetPage(name: NamePages.pMyprofile, page: () => const Myprofile()),
-  GetPage(
-      name: NamePages.pSendOrderBalance, page: () => const SendOrderBalance())
+  GetPage(name: NamePages.pMyprofile, page: () => Myprofile()),
+  GetPage(name: NamePages.pSendOrderBalance, page: () => SendOrderBalance())
 ];

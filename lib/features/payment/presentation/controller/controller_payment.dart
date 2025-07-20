@@ -4,7 +4,6 @@ import 'package:nylon/core/url/url_api.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:nylon/features/payment/presentation/screens/payment_webview_screen.dart';
 import 'package:nylon/core/function/method_GPUD.dart';
-import 'package:nylon/core/services/services.dart';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ import 'package:nylon/features/payment/data/models/test_zone.dart';
 import 'package:nylon/features/payment/data/models/model_tamarapay.dart';
 import 'package:nylon/features/payment/data/models/payment_model.dart';
 import 'package:nylon/features/payment/data/models/select_patment.dart';
-import 'package:nylon/features/payment/data/models/balance_payment_model.dart';
 import 'package:nylon/features/payment/data/models/zone_id_city.dart';
 import 'package:nylon/features/shipping/presentation/controller/controller_shipping.dart';
 import 'package:nylon/features/cart/presentation/controller/controller_cart.dart';
@@ -33,71 +31,8 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:nylon/core/services/services.dart';
 
 abstract class PaymentController extends GetxController {
-  final MyServices _myServices = Get.find();
-
-  Future<void> fastCheckout({
-    required String customerId,
-    required String firstname,
-    required String lastname,
-    required String address1,
-    required String city,
-    String zoneId = "23",
-    String telephone = "",
-  }) async {
-    statusRequestFastCheckout = StatusRequest.loading;
-    update();
-
-    final token = _myServices.sharedPreferences.getString('token') ?? "";
-    final url = "${AppApi.urlSelectIdAddressnOrder}$token";
-
-    print("🚀 FAST CHECKOUT CALLED with customerId=$customerId");
-    print("🌍 Full URL: $url");
-
-    try {
-      final response = await http.post(
-        Uri.parse(url),
-        body: {
-          "customer_id": customerId,
-          "firstname": firstname,
-          "lastname": lastname,
-          "address_1": address1,
-          "city": city,
-          "zone_id": zoneId,
-          "telephone": telephone,
-        },
-      );
-
-      print("📡 POST sent to: $url");
-      print("📦 Response status: ${response.statusCode}");
-      print("📦 Response body: ${response.body}");
-
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body);
-
-        if (jsonData.containsKey("success")) {
-          statusRequestFastCheckout = StatusRequest.success;
-          Get.snackbar("نجاح", jsonData["success"]);
-        } else if (jsonData.containsKey("error")) {
-          statusRequestFastCheckout = StatusRequest.failure;
-          Get.snackbar("خطأ", jsonData["error"]);
-        } else {
-          statusRequestFastCheckout = StatusRequest.failure;
-          print("⚠️ Unexpected response: $jsonData");
-        }
-      } else {
-        statusRequestFastCheckout = handleStatusCode(response.statusCode);
-      }
-    } catch (e) {
-      statusRequestFastCheckout = StatusRequest.failure;
-      print("❌ Exception: $e");
-    }
-
-    update();
-  }
-
   Future addAddressPayment();
-  StatusRequest? statusRequestGetPayment;
-  StatusRequest? statusRequestFastCheckout;
+
   Future getPayment();
   Future selectPayment({required String paymentCode});
   void selectCode({required String code, required String title});
@@ -112,36 +47,28 @@ abstract class PaymentController extends GetxController {
   Future<void> selectAddress(String addressId);
   Future paymentMyFatoorahBlance();
   Future paymentTabby();
-  Future<void> processOrderBalanceWithMyFatoorah();
   Future<void> processMyFatoorah(); // هنا التعريف فقط (لو حاب)
 }
 
 class ControllerPayment extends PaymentController {
   final PaymentDataSourceImpl _paymentDataSourceImpl =
       PaymentDataSourceImpl(Get.find());
-  final ProfileDataSourceImpl _profileDataSourceImpl =
-      ProfileDataSourceImpl(Get.find());
-  final ControllerShipping _controllerShipping = Get.put(ControllerShipping());
-  @override
   final MyServices _myServices = Get.find();
-
   String get token => _myServices.sharedPreferences.getString('token') ?? '';
   String get customerId =>
       _myServices.sharedPreferences.getString('UserId') ?? '';
 
-  PaymentModel? paymentModel;
-  BalancePaymentModel? balancePaymentModel;
-  List<PaymentsData> paymentsDataList = [];
-  PaymentsData? selectedBalancePayment;
-
-  String selectCodePayment = '';
-  String titlePayment = '';
-
+  final ProfileDataSourceImpl _profileDataSourceImpl =
+      ProfileDataSourceImpl(Get.find());
+  final ControllerShipping _controllerShipping = Get.put(ControllerShipping());
   GlobalKey<FormState> formAddAddress = GlobalKey<FormState>();
   GlobalKey<FormState> formMyFatoorahCard = GlobalKey<FormState>();
+  PaymentModel? paymentModel;
+  List<PaymentsData> paymentsDataList = [];
+  String selectCodePayment = '';
+  String titlePayment = '';
+  PaymentsData? selectedBalancePayment;
 
-  @override
-  @override
   StatusRequest? statusRequestAddAddress,
       statusRequestGetZone,
       statusRequestsendCode,
@@ -153,13 +80,7 @@ class ControllerPayment extends PaymentController {
       statusRequestTamaraPay,
       statusRequestCheckTamara,
       statusRequestConfBank,
-      statusRequestAddImage,
-      statusRequestFastCheckout;
-
-  void selectCodeBalanceSimple({required String code, required String title}) {
-    selectCodePayment = code;
-    update();
-  }
+      statusRequestAddImage;
 
   AddressModel? allAddress;
   ModelMyFatoorah? modelMyFatoorah;
@@ -188,65 +109,6 @@ class ControllerPayment extends PaymentController {
   StatusRequest? statusRequestGetAddresses;
 
   @override
-  Future<void> processOrderBalanceWithMyFatoorah() async {
-    statusRequestpMyFatoorah = StatusRequest.loading;
-    update();
-
-    final data = await addOrderBalance();
-    if (data != null && data['order_id'] != null) {
-      final orderId = data['order_id'].toString();
-      print("🎯 order_id after add balance: $orderId");
-
-      selectPaymentModel?.orderId = int.tryParse(orderId);
-
-      await paymentMyFatoorah();
-    } else {
-      statusRequestpMyFatoorah = StatusRequest.failure;
-      showSnackBar("فشل في تجهيز الطلب");
-      update();
-    }
-  }
-
-  @override
-  Future<void> fastCheckout({
-    required String customerId,
-    required String firstname,
-    required String lastname,
-    required String address1,
-    required String city,
-    String zoneId = "23",
-    String telephone = "",
-  }) async {
-    statusRequestFastCheckout = StatusRequest.loading;
-    update();
-    try {
-      final response = await http.post(
-        Uri.parse(
-            "${AppApi.urlSelectIdAddressnOrder}${_myServices.sharedPreferences.getString("token") ?? ""}"),
-        body: {
-          'customer_id': customerId,
-          'firstname': firstname,
-          'lastname': lastname,
-          'address_1': address1,
-          'city': city,
-          'zone_id': '198',
-        },
-      );
-      print("🔵 fastCheckout response: ${response.body}");
-      final data = json.decode(response.body);
-      if (data["success"] != null) {
-        statusRequestFastCheckout = StatusRequest.success;
-      } else {
-        statusRequestFastCheckout = StatusRequest.failure;
-      }
-    } catch (e) {
-      print("🔴 fastCheckout error: $e");
-      statusRequestFastCheckout = StatusRequest.failure;
-    }
-    update();
-  }
-
-  @override
   Future<void> processMyFatoorah() async {
     statusRequestpMyFatoorah = StatusRequest.loading;
     update();
@@ -272,11 +134,10 @@ class ControllerPayment extends PaymentController {
   /// ✅ NEW METHOD - Calls addOrderBalace API and returns order_id
   Future<Map?> addOrderBalance() async {
     final token = _myServices.sharedPreferences.getString('token') ?? "";
-    final url = "${AppApi.selectPaymentUrl}$token";
+    final url = "${AppApi.urlAddOrderBalace}$token";
 
     try {
-      final response = await http
-          .post(Uri.parse(url), body: {"payment_method": "myfatoorah_pg"});
+      final response = await http.post(Uri.parse(url), body: {});
       final jsonData = jsonDecode(response.body);
       print("✅ addOrderBalance response: $jsonData");
 
@@ -521,29 +382,6 @@ class ControllerPayment extends PaymentController {
     }
   }
 
-  Future<void> processBalancePaymentWithMyFatoorah() async {
-    print('go start ');
-    statusRequestpMyFatoorah = StatusRequest.loading;
-  update();
-
-    final data = await addOrderBalance();
-    print('dATA PROCECC: $data');
-    if (data != null && data['order_id'] != null) {
-      balancePaymentModel =
-          BalancePaymentModel.fromJson(Map<String, dynamic>.from(data));
-      print(
-          "✅ balancePaymentModel created. Order ID: ${balancePaymentModel?.orderId}");
-      await paymentMyFatoorahForBalance(
-          orderId: balancePaymentModel?.orderId?.toString() ?? "");
-      print("✅ بعد حفظ orderId داخل balancePaymentModel: "
-          "${balancePaymentModel?.orderId}");
-    } else {
-      statusRequestpMyFatoorah = StatusRequest.failure;
-      showSnackBar("فشل في تجهيز طلب الرصيد");
-      update();
-    }
-  }
-
   Future<void> paymentMyFatoorahForBalance({required String orderId}) async {
     print("🚀 Starting paymentMyFatoorahForBalance for order_id: $orderId");
 
@@ -565,21 +403,8 @@ class ControllerPayment extends PaymentController {
         print("✅ paymentMyFatoorahForBalance success: $data");
         if (data.containsKey("invoiceURL")) {
           final url = data["invoiceURL"];
-          print("🔗 Original URL: $url");
-
-          // تعديل الرابط لإضافة order_id و is_app=1
-          String modifiedUrl = url.contains("?")
-              ? "$url&order_id=$orderId&is_app=1"
-              : "$url?order_id=$orderId&is_app=1";
-
-          print("🔗 Modified URL: $modifiedUrl");
-
-          Get.to(() => PaymentWebViewScreen(
-                url: modifiedUrl,
-                orderId: orderId,
-                successKeyword: 'success',
-                failKeyword: 'fail',
-              ));
+          print("🔗 Opening WebView with: $url");
+          openPaymentWebView(gateway: "myfatoorah_pg", url: url);
         }
         showSnackBar("تم تنفيذ الدفع بنجاح");
         return;
@@ -677,19 +502,6 @@ class ControllerPayment extends PaymentController {
     Get.find<ControllerCart>().update();
 
     print('✅ Payment method selected => Code: $code | Title: $title');
-  }
-
-  Future<void> selectCodeBalance(
-      {required String code, required String title}) async {
-    if (selectCodePayment == code) return;
-    selectCodePayment = code;
-    titlePayment = title;
-    selectedBalancePayment = paymentsDataList.firstWhere(
-      (e) => e.code == code,
-      orElse: () => PaymentsData(),
-    );
-    print('Selected payment code for balance: $selectCodePayment');
-    update();
   }
 
   Future<void> fetchZones() async {
@@ -1139,12 +951,12 @@ class ControllerPayment extends PaymentController {
           print("✅ fastCheckout success: ${jsonData["success"]}");
           Get.snackbar("نجاح", jsonData["success"],
               snackPosition: SnackPosition.BOTTOM,
-              duration: const Duration(seconds: 2));
+              duration: Duration(seconds: 2));
         } else if (jsonData.containsKey("error")) {
           print("🚨 fastCheckout returned error: ${jsonData["error"]}");
           Get.snackbar("خطأ", jsonData["error"],
               snackPosition: SnackPosition.BOTTOM,
-              duration: const Duration(seconds: 2));
+              duration: Duration(seconds: 2));
         } else {
           print("⚠️ Unexpected response structure: $jsonData");
         }
@@ -1155,66 +967,5 @@ class ControllerPayment extends PaymentController {
     } catch (e) {
       print("❌ Exception while calling fastCheckout: $e");
     }
-  }
-
-  Future<void> getBalancePaymentsAndAutoSelectMyFatoorah({
-    required String customerId,
-  }) async {
-    print("🚀 تحميل وسائل دفع الرصيد ثم اختيار ماي فاتورة تلقائياً...");
-    print(
-        "🧭 getBalancePaymentsAndAutoSelectMyFatoorah: customerId => $customerId");
-
-    statusRequestGetPayment = StatusRequest.loading;
-    update();
-
-    var response = await _paymentDataSourceImpl.getPayment();
-    print("📦 paymentMyFatoorah RESPONSE: $response");
-
-    return response.fold((failure) {
-      statusRequestGetPayment = failure;
-      print('خطأ في تحميل وسائل الدفع: $failure');
-      update();
-    }, (data) async {
-      if (data.containsKey("error")) {
-        statusRequestGetPayment = StatusRequest.badRequest;
-        print('استجابة خاطئة: ${data["error"]}');
-        update();
-      } else {
-        try {
-          paymentModel = PaymentModel.fromJson(data as Map<String, dynamic>);
-          paymentsDataList = paymentModel!.paymentMethods!.toPaymentsDataList();
-          await checkLocalImageAssets(paymentsDataList);
-          statusRequestGetPayment = StatusRequest.success;
-          update();
-
-          // ✅ لابد من استدعاء fast checkout أو set address قبل
-          print(
-              "🟢 جاري استدعاء selectIdAddressOnOrder مع customerId: $customerId");
-          await selectIdAddressOnOrder(customerId: customerId);
-
-          // ✅ اختار ماي فاتورة تلقائي
-          var myFatoorah = paymentsDataList.firstWhere(
-            (element) => element.code == "myfatoorah_pg",
-            orElse: () => PaymentsData(code: "myfatoorah_pg"),
-          );
-
-          await selectCode(
-            code: myFatoorah.code!,
-            title: myFatoorah.separatedText ?? "",
-          );
-
-          // ✅ مخصصة للـ balance فقط
-          await processBalancePaymentWithMyFatoorah();
-          print(
-              "✅ بعد processBalancePaymentWithMyFatoorah order_id = ${balancePaymentModel?.orderId}");
-
-          await paymentMyFatoorah();
-        } catch (e) {
-          print('❌ خطأ أثناء معالجة وسائل الدفع: $e');
-          statusRequestGetPayment = StatusRequest.serverFailure;
-        }
-        update();
-      }
-    });
   }
 }

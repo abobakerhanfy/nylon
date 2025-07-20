@@ -48,13 +48,20 @@ class _SilderOffersState extends State<SilderOffers> {
                     enlargeCenterPage: true,
                     autoPlay: true,
                   ),
-                  items: widget.image.map((
-                    i,
-                  ) {
-                    return CachedNetworkImageWidget(
-                      imageUrl: i.image!,
-                      fit: BoxFit.fill,
-                    );
+                  items: widget.image.map((i) {
+                    if (i.image != null && i.image!.isNotEmpty) {
+                      return CachedNetworkImageWidget(
+                        imageUrl: i.image!,
+                        fit: BoxFit.fill,
+                      );
+                    } else {
+                      return Container(
+                        color: Colors.grey[300],
+                        alignment: Alignment.center,
+                        child: const Icon(Icons.broken_image,
+                            size: 48, color: Colors.grey),
+                      );
+                    }
                   }).toList(),
                 ),
               ),

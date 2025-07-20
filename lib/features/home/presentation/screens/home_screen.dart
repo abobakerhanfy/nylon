@@ -3,6 +3,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:nylon/core/function/hindling_data_view.dart';
 import 'package:nylon/core/routes/name_pages.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:nylon/core/widgets/cached_network_image.dart';
 
 import 'package:nylon/core/theme/colors_app.dart';
 import 'package:nylon/core/widgets/coutm_app_bar_tow.dart';
@@ -150,7 +152,14 @@ class ProductSearchResults extends StatelessWidget {
             margin: const EdgeInsets.all(10),
             child: ListTile(
               contentPadding: const EdgeInsets.all(10),
-              leading: Image.network(product.thumb ?? ""), // عرض الصورة
+              leading: (product.thumb != null && product.thumb!.isNotEmpty)
+                  ? CachedNetworkImageWidget(
+                      imageUrl: product.thumb!,
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.cover,
+                    )
+                  : const Icon(Icons.image_not_supported),
               title: Text(product.nameP ?? "",
                   style: const TextStyle(
                       fontSize: 15, fontWeight: FontWeight.bold)),
@@ -184,7 +193,6 @@ class ProductSearchResults extends StatelessWidget {
                         style: TextStyle(fontSize: 14, color: Colors.red)),
                 ],
               ),
-
               onTap: () {
                 Get.toNamed(NamePages.pOneProduct, arguments: product);
                 // افتح الرابط عندما ينقر المستخدم
