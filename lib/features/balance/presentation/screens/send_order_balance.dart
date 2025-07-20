@@ -35,9 +35,8 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
   void initState() {
     super.initState();
     final MyServices myServices = Get.find();
-    myServices.sharedPreferences.setString('UserId', '6701');
-    final customerId =
-        myServices.sharedPreferences.getString("UserId") ?? "6702";
+    myServices.sharedPreferences.setString('UserId', '');
+    final customerId = myServices.sharedPreferences.getString("UserId") ?? "";
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await _controller.getPayment(); // ✅ هذا هو السطر الأساسي المطلوب
