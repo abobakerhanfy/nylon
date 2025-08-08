@@ -14,9 +14,12 @@ class ButtonOnCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Center(
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius:
+            BorderRadius.circular(20), // إضافة border radius للـ ripple effect
+        onTap: onTap,
         child: Container(
           height: 50,
           width: width,

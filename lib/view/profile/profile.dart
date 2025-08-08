@@ -8,8 +8,12 @@ import 'package:nylon/features/cart/presentation/screens/widgets/button_on_cart.
 import 'package:nylon/features/login/presentation/controller/controller_login.dart';
 import 'package:nylon/features/notification/presentation/controller/controller_notification.dart';
 import 'package:nylon/view/home/widgets.dart';
-
+import 'package:http/http.dart' as http;
 import '../../core/routes/name_pages.dart';
+import 'package:nylon/core/url/url_api.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:nylon/core/widgets/login/dialog.dart';
+import 'package:nylon/core/widgets/primary_button.dart';
 
 class Profile extends StatelessWidget {
   Profile({super.key});
@@ -153,6 +157,93 @@ class Profile extends StatelessWidget {
                         label: "203".tr,
                         boxSize: boxSize,
                         icon: Icons.login_outlined,
+                      ),
+                      ContainerProfileImage(
+                        onTap: () async {
+                          print("tr(215) => ${'215'.tr}");
+
+                          newCustomDialog(
+                            title: 'delete_account_title'.tr,
+                            dialogType: DialogType.warning,
+                            body: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Expanded(
+                                  child: PrimaryButton(
+                                    label: 'delete_account_cancel'.tr,
+                                    onTap: () => Get.back(),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: PrimaryButton(
+                                    label: 'delete_account_confirm'.tr,
+                                    onTap: () async {
+                                      Get.back(); // إغلاق الرسالة
+
+                                      final String? customerId = _myServices
+                                          .sharedPreferences
+                                          .getString("customer_id");
+                                      final String? phone = _myServices
+                                              .sharedPreferences
+                                              .getString("Phone") ??
+                                          _myServices.sharedPreferences
+                                              .getString("Phon_User");
+                                      final token = _myServices
+                                          .sharedPreferences
+                                          .getString('token');
+
+                                      if (token != null &&
+                                          (customerId != null ||
+                                              phone != null)) {
+                                        final deleteUrl = Uri.parse(
+                                            '${AppApi.deleteCustomer}$token');
+
+                                        final response =
+                                            await http.post(deleteUrl, body: {
+                                          if (customerId != null)
+                                            'customer_id': customerId,
+                                          if (customerId == null &&
+                                              phone != null)
+                                            'telephone': phone,
+                                        });
+
+                                        if (response.statusCode == 200 &&
+                                            response.body.contains('success')) {
+                                          await _myServices.sharedPreferences
+                                              .clear();
+                                          Get.offAllNamed(NamePages.pFirst);
+                                        } else {
+                                          newCustomDialog(
+                                            title: 'delete_account_fail'.tr,
+                                            dialogType: DialogType.error,
+                                            body: PrimaryButton(
+                                              label: 'delete_account_cancel'.tr,
+                                              onTap: () => Get.back(),
+                                            ),
+                                          );
+                                        }
+                                      } else {
+                                        newCustomDialog(
+                                          title: 'delete_account_no_data'.tr,
+                                          dialogType: DialogType.info,
+                                          body: PrimaryButton(
+                                            label: 'delete_account_cancel'.tr,
+                                            onTap: () => Get.back(),
+                                          ),
+                                        );
+                                      }
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        svg: '',
+                        icon: Icons.delete_forever,
+                        label: '215'.tr,
+                        boxSize: boxSize,
                       ),
                     ],
                   ),

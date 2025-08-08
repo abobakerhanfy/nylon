@@ -30,6 +30,7 @@ class MyServices extends GetxService {
     await sharedPreferences.remove('Phone');
     await sharedPreferences.remove('Phon_User');
     await sharedPreferences.remove('NewCustomer_id');
+    await sharedPreferences.remove('telephone');
   }
 
   void printAllSharedPreferences() {

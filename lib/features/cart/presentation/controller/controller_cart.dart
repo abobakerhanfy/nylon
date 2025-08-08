@@ -5,6 +5,9 @@ import 'package:nylon/features/cart/data/data_sources/cart_data_source.dart';
 import 'package:nylon/features/cart/data/models/get_cart_model.dart';
 import 'package:flutter/material.dart';
 import 'package:nylon/core/services/services.dart';
+import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:nylon/core/widgets/login/dialog.dart';
+import 'package:nylon/core/widgets/primary_button.dart';
 
 abstract class CartController extends GetxController {
   Future getCart();
@@ -123,12 +126,23 @@ class ControllerCart extends CartController {
       // ⚠️ تنبيه للمخزون إن وجد
       if (rawData.containsKey("error") &&
           rawData["error"].containsKey("stock")) {
-        Get.defaultDialog(
+        newCustomDialog(
           title: "تنبيه",
-          middleText: rawData["error"]["stock"],
-          confirm: TextButton(
-            onPressed: () => Get.back(),
-            child: const Text("حسناً"),
+          dialogType: DialogType.warning,
+          body: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                rawData["error"]["stock"],
+                textAlign: TextAlign.center,
+                style: Theme.of(Get.context!).textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 16),
+              PrimaryButton(
+                label: "حسناً",
+                onTap: () => Get.back(),
+              ),
+            ],
           ),
         );
       }

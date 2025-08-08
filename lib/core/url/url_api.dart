@@ -104,6 +104,7 @@
 //   static const String checkOrderBuyOrNo =
 //       '$baseUrl2/myfatoorah/checkOrderBuyOrNo&order_id=';
 // }
+
 class AppApi {
   static const String baseUrl2 = 'https://www.nylonsa.com/index.php?route=api';
   static const String baseUrl = 'https://www.nylonsa.com/index.php?route=api';
@@ -207,4 +208,6 @@ class AppApi {
       "$baseUrl2/myfatoorah/checkOrderBuyOrNo&order_id=";
   static const String checkOrderBuyOrNo =
       '$baseUrl2/myfatoorah/checkOrderBuyOrNo&order_id=';
+  static const String deleteCustomer =
+      '$baseUrl2/customer/deleteCustomerData&api_token=';
 }

@@ -220,6 +220,12 @@ class MyLocale implements Translations {
           '212': 'جاري التحديث',
           '213': 'يتم تحديث الفاتورة...',
           '214': 'برجاء ازالة هذا المنتج',
+          '215': 'حذف الحساب',
+          'delete_account_title': 'هل تريد حذف الحساب نهائيًا؟',
+          'delete_account_cancel': 'إلغاء',
+          'delete_account_confirm': 'حذف',
+          'delete_account_fail': 'فشل حذف الحساب من السيرفر',
+          'delete_account_no_data': 'لا توجد بيانات كافية لحذف الحساب',
         },
         'en': {
           '1': 'Welcome to Nylon Store',
@@ -444,6 +450,13 @@ class MyLocale implements Translations {
           '212': 'Updating...',
           '213': 'Invoice is being updated...',
           '214': 'Please remove this item',
+          '215': 'Delete account',
+          'delete_account_title':
+              'Do you want to delete the account permanently?',
+          'delete_account_cancel': 'Cancel',
+          'delete_account_confirm': 'Delete',
+          'delete_account_fail': 'Failed to delete account from server',
+          'delete_account_no_data': 'No enough data to delete account',
         }
       };
 }

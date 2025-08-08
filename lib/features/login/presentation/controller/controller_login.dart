@@ -103,6 +103,11 @@ class ControllerLogin extends LoginController {
         await cartController.getCart();
       }
     });
+    cPhoneOnCart.clear();
+    isSendC = false;
+    statusRequestSPhoneC = null;
+    statusRequestSendCodeOnCart = null;
+    update();
   }
 
   // Future<void> resetSession() async {

@@ -52,7 +52,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
         await Future.delayed(Duration(seconds: 1));
         _controller.indexScreensCart = 0;
         _controller.update();
-        Get.offAllNamed(NamePages.pCart);
+        Get.offAllNamed(NamePages.pVerificationUserCart);
       } else if (cartIsEmpty) {
         Get.snackbar('تنبيه', 'السلة فارغة، الرجاء اضافة منتجات');
         await Future.delayed(Duration(seconds: 1));
