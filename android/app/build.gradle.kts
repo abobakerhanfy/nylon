@@ -15,8 +15,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.nylonsa.app"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
+
+    // مهم علشان الأخطاء اللي ظهرت
+    compileSdk = 35
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -29,14 +31,14 @@ android {
 
     defaultConfig {
         applicationId = "com.nylonsa.app"
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        minSdk = 23
+        targetSdk = 35
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        
+
         ndk {
             abiFilters.add("arm64-v8a")
-            abiFilters.add("armeabi-v7a") 
+            abiFilters.add("armeabi-v7a")
             abiFilters.add("x86_64")
         }
     }
@@ -49,20 +51,20 @@ android {
             storePassword = keystoreProperties["storePassword"] as String?
         }
     }
-    
+
     buildTypes {
         release {
             signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             isShrinkResources = false
             isDebuggable = false
-            
+
             ndk {
                 debugSymbolLevel = "NONE"
             }
         }
     }
-    
+
     packaging {
         jniLibs {
             useLegacyPackaging = true
