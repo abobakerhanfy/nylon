@@ -10,19 +10,51 @@ import '../../../../../core/languages/function_string.dart';
 import '../../../../../core/theme/colors_app.dart';
 
 // ignore: must_be_immutable
+
 class ProductsContainerHome extends StatelessWidget {
   final Productss products;
   int? ratings;
+
   final Function() onTap;
   final Function() onTapFavorite;
   final Function() onTapCart;
+
   ProductsContainerHome(
       {super.key,
       required this.products,
       required this.onTapFavorite,
       required this.onTapCart,
       required this.onTap});
+
   final MyServices _myServices = Get.find();
+  double parsePrice(dynamic price) {
+    if (price == null) return 0.0;
+    if (price is int) return price.toDouble();
+    if (price is double) return price;
+    if (price is bool) return 0.0;
+
+    String priceString = price.toString();
+
+    // إزالة HTML tags والمحتوى غير المرغوب فيه
+    priceString = priceString.replaceAll(RegExp(r'<[^>]*>'), '');
+    priceString = priceString.replaceAll(RegExp(r'[^\d.]'), '');
+
+    // التحقق من وجود نقاط متعددة
+    List<String> parts = priceString.split('.');
+    if (parts.length > 2) {
+      priceString = '${parts[0]}.${parts[1]}';
+    }
+
+    if (priceString.isEmpty) return 0.0;
+
+    try {
+      return double.parse(priceString);
+    } catch (e) {
+      print('Error parsing price: $price -> $priceString');
+      return 0.0;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -153,9 +185,8 @@ class ProductsContainerHome extends StatelessWidget {
                                                                 is double
                                                             ? products.price
                                                                 as double
-                                                            : double.parse(
-                                                                products
-                                                                    .price!))
+                                                            : parsePrice(
+                                                                products.price))
                                                     .toStringAsFixed(2),
                                                 style: Theme.of(context)
                                                     .textTheme
@@ -188,9 +219,9 @@ class ProductsContainerHome extends StatelessWidget {
                                                                 is double
                                                             ? products.special
                                                                 as double
-                                                            : double.parse(
+                                                            : parsePrice(
                                                                 products
-                                                                    .special!))
+                                                                    .special))
                                                     .toStringAsFixed(2),
                                                 style: Theme.of(context)
                                                     .textTheme
@@ -236,9 +267,9 @@ class ProductsContainerHome extends StatelessWidget {
                                                                 is double
                                                             ? products.special
                                                                 as double
-                                                            : double.parse(
+                                                            : parsePrice(
                                                                 products
-                                                                    .special!))
+                                                                    .special))
                                                     .toStringAsFixed(2),
                                                 style: Theme.of(context)
                                                     .textTheme

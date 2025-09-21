@@ -15,6 +15,8 @@ abstract class OneProductController extends GetxController {
 }
 
 class ControllerOneProduct extends OneProductController {
+  String? _productId; // ← هنملأه من Get.arguments سواء Map أو موديل
+  bool _argWasModel = false; // ← نعرف إذا اللي جالنا Productss جاهز
   final ControllerCart _controllerCart = Get.find();
   final OneProductDataSourceImpl _oneProductDataSourceImpl =
       OneProductDataSourceImpl(Get.find());
@@ -24,17 +26,31 @@ class ControllerOneProduct extends OneProductController {
   int count = 1;
 
   getCount() {
-    if (_controllerCart.cartMap.containsKey(products!.productId!)) {
+    // لو ما عندناش productId لسه، خلّي العدّاد الافتراضي 1
+    final pid = (_productId ?? products?.productId)?.toString().trim();
+    if (pid == null || pid.isEmpty) {
+      count = 1;
+      update();
+      return;
+    }
+
+    // لو المنتج موجود بالفعل في السلة خُد الكمية منه
+    if (_controllerCart.cartMap.containsKey(pid)) {
       for (var e in _controllerCart.cartModel.value?.products ?? []) {
-        if (e.productId == products!.productId!) {
-          count = int.parse(e.quantity!);
+        if (e.productId == pid) {
+          count = int.tryParse(e.quantity ?? e.quantityC ?? '1') ?? 1;
+          break;
         }
       }
-      products!.calculatePriceWithDiscount(count);
-      update();
     } else {
-      products!.calculatePriceWithDiscount(count);
-      update();
+      count = 1;
+    }
+
+    // حدّث سعر العرض لو عندنا موديل Productss
+    try {
+      products?.calculatePriceWithDiscount(count);
+    } catch (_) {
+      // لا تتوقف لو مش متاحة
     }
 
     update();
@@ -42,7 +58,26 @@ class ControllerOneProduct extends OneProductController {
 
   @override
   arguments() {
-    products = Get.arguments;
+    final args = Get.arguments;
+
+    if (args is Productss) {
+      // جالك موديل جاهز
+      products = args;
+      _productId = args.productId?.toString().trim();
+      _argWasModel = true;
+    } else if (args is Map) {
+      // جالك Map {product_id, rawLink, source, ...}
+      final id = (args['product_id'] ?? args['id'] ?? '').toString().trim();
+      _productId = id.isEmpty ? null : id;
+      _argWasModel = false;
+    } else if (args != null) {
+      // fallback لو اتبعت id كـ int مثلاً
+      _productId = args.toString().trim();
+    }
+
+    // Debug
+    print('🧭 OneProduct args → productId=$_productId, hasModel=$_argWasModel');
+
     update();
   }
 
@@ -51,17 +86,33 @@ class ControllerOneProduct extends OneProductController {
     print('sooooooooooooooooooooo');
     arguments();
     update();
-    await getOneProduct(null);
+
+    // لو مفيش موديل جاهز هنحمّل بالمُعرف
+    await getOneProduct(_productId);
+
+    // عدّل العدّاد بعد ما تتوفر بيانات المنتج أو على الأقل عندنا productId
     getCount();
+
     super.onInit();
   }
 
   @override
   getOneProduct(String? id) async {
+    final effectiveId =
+        (id ?? _productId ?? products?.productId)?.toString().trim();
+
+    if (effectiveId == null || effectiveId.isEmpty) {
+      print('❌ getOneProduct: no id to load');
+      statusRequestGetOP = StatusRequest.failure;
+      update();
+      return;
+    }
+
     statusRequestGetOP = StatusRequest.loading;
     update();
-    var response = await _oneProductDataSourceImpl.getOneProduct(
-        idProduct: id ?? products!.productId!);
+
+    final response =
+        await _oneProductDataSourceImpl.getOneProduct(idProduct: effectiveId);
     return response.fold((failure) {
       statusRequestGetOP = failure;
       print(statusRequestGetOP);
@@ -69,13 +120,36 @@ class ControllerOneProduct extends OneProductController {
       update();
     }, (data) {
       productModel = OneProductModel.fromJson(data as Map<String, dynamic>);
-      // print(productModel!.description!.description);
       statusRequestGetOP = StatusRequest.success;
-      List tt = productModel!.getAllImages();
 
-      if (productModel!.discounts!.isNotEmpty) {
-        print(productModel!.discounts!.first.price);
+      // لو ماجاش موديل Productss من الـ arguments، حاول تطلّع منه نسخة خفيفة للاستخدام المحلي
+      try {
+        if (!_argWasModel && (productModel?.product?.isNotEmpty ?? false)) {
+          final p = productModel!.product!.first;
+          products ??= Productss(
+            productId: p.productId,
+            name: p.name,
+            price: p.price,
+            special: p.special,
+            description: p.description,
+            image: p.image,
+            rating: p.rating,
+          );
+          _productId ??= p.productId?.toString().trim();
+        }
+      } catch (e) {
+        // لو Productss مش مناسب هنا سيبها زي ما هي
+        print('ℹ️ Could not map to Productss: $e');
       }
+
+      // Debug
+      final imgs = productModel!.getAllImages();
+      print('🖼 images count: ${imgs.length}');
+      if ((productModel!.discounts ?? []).isNotEmpty) {
+        print(
+            '💸 first discount price: ${productModel!.discounts!.first.price}');
+      }
+
       update();
       print('ssssssssssssssssssssssssssssssssssssssssssus');
     });
@@ -83,13 +157,19 @@ class ControllerOneProduct extends OneProductController {
 
   void plusCount() {
     count++;
-    products!.calculatePriceWithDiscount(count);
+    try {
+      products?.calculatePriceWithDiscount(count);
+    } catch (_) {}
     update();
-    // تحديث السلة إن كان المنتج موجود
-    if (_controllerCart.cartMap.containsKey(products!.productId!)) {
+
+    final pid = (_productId ?? products?.productId)?.toString().trim();
+    if (pid != null &&
+        pid.isNotEmpty &&
+        _controllerCart.cartMap.containsKey(pid)) {
       _controllerCart.editCartProduct(
-          cartId: _controllerCart.cartMap[products!.productId!]!,
-          quantity: count);
+        cartId: _controllerCart.cartMap[pid]!,
+        quantity: count,
+      );
     }
     update();
   }
@@ -97,13 +177,19 @@ class ControllerOneProduct extends OneProductController {
   void minusCount() {
     if (count > 1) {
       count--;
-      products!.calculatePriceWithDiscount(count);
+      try {
+        products?.calculatePriceWithDiscount(count);
+      } catch (_) {}
       update();
-      // تحديث السلة إن كان المنتج موجود
-      if (_controllerCart.cartMap.containsKey(products!.productId!)) {
+
+      final pid = (_productId ?? products?.productId)?.toString().trim();
+      if (pid != null &&
+          pid.isNotEmpty &&
+          _controllerCart.cartMap.containsKey(pid)) {
         _controllerCart.editCartProduct(
-            cartId: _controllerCart.cartMap[products!.productId!]!,
-            quantity: count);
+          cartId: _controllerCart.cartMap[pid]!,
+          quantity: count,
+        );
       }
     }
     update();

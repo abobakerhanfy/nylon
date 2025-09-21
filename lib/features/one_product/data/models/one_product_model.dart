@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:nylon/features/home/data/models/mobile_featured.dart';
 
 class OneProductModel {
@@ -74,57 +73,65 @@ class OneProductModel {
     return data;
   }
 
-  // دالة لحساب السعر بناءً على الكمية والخصومات
   double calculatePriceWithDiscount(int quantity) {
-    // 1. تحديد السعر الأساسي:
-    double basePrice = _convertToDouble(product?.first.price) > 0
-        ? _convertToDouble(product?.first.price) // استخدم السعر إذا كان غير صفر
-        : _convertToDouble(
-            product?.first.special); // سعر افتراضي في حال عدم وجود سعر
+    // لو مفيش منتج في الليست نرجّع 0 بأمان
+    if (product == null || product!.isEmpty) return 0.0;
 
-    // 2. تحقق من الخصومات
+    final first = product!.first;
+    final base = _convertToDouble(first.price);
+    final special = _convertToDouble(first.special);
+
+    // القاعدة: لو فيه special (>0) استخدمه كسعر أساسي، وإلا price
+    double basePrice = special > 0 ? special : base;
+
+    // طبّق أفضل خصم تنطبق شروطه (أعلى quantity ≤ المطلوبة)
     if (discounts != null && discounts!.isNotEmpty) {
-      for (var discount in discounts!) {
-        // إذا كانت الكمية المطلوبة تساوي أو أكبر من الكمية المطلوبة للخصم
-        if (quantity >= discount.quantity!) {
-          return _convertToDouble(
-              discount.price); // إرجاع السعر بعد تطبيق الخصم
+      // رتب الخصومات تصاعدي حسب الكمية
+      final sorted = [...discounts!]
+        ..sort((a, b) => (a.quantity ?? 0).compareTo(b.quantity ?? 0));
+
+      double? best;
+      for (final d in sorted) {
+        final q = d.quantity ?? 0;
+        if (quantity >= q && q > 0) {
+          best = _convertToDouble(d.price);
         }
       }
+      if (best != null && best > 0) return best;
     }
 
-    // 3. إذا لم يكن هناك خصم أو لم تحقق الكمية، العودة بالسعر الأساسي
     return basePrice;
   }
 
-  // دالة مساعدة لتحويل السعر إلى double
   double _convertToDouble(dynamic value) {
-    if (value is int) {
-      return value.toDouble();
-    } else if (value is double) {
-      return value;
-    } else if (value is String) {
-      return num.parse(value).toDouble();
-    } else {
-      return 0.0; // قيمة افتراضية إذا لم يكن السعر من الأنواع المعروفة
+    if (value == null) return 0.0;
+    if (value is int) return value.toDouble();
+    if (value is double) return value;
+    if (value is String) {
+      final s = value.trim();
+      if (s.isEmpty) return 0.0;
+      final n = num.tryParse(s);
+      return (n?.toDouble() ?? 0.0);
     }
+    return 0.0;
   }
 
-  // دالة للحصول على جميع الصور
   List<String> getAllImages() {
-    List<String> allImages = [];
+    final List<String> allImages = [];
 
-    // إضافة الصورة الأولى من الحقل "image" إذا كانت موجودة
-    if (product?.first.image != null) {
-      allImages.add(product!.first.image!);
-    }
+    try {
+      final firstImg =
+          product?.isNotEmpty == true ? product!.first.image : null;
+      if (firstImg != null && firstImg.toString().trim().isNotEmpty) {
+        allImages.add(firstImg);
+      }
+    } catch (_) {}
 
-    // إضافة الصور من الحقل "images" إذا كانت موجودة
     if (images != null && images!.isNotEmpty) {
       allImages.addAll(
         images!
-            .map((img) => img.popup)
-            .where((popup) => popup != null)
+            .map((img) => img.popup?.toString().trim())
+            .where((s) => s != null && s!.isNotEmpty)
             .cast<String>(),
       );
     }

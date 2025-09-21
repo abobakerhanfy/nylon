@@ -14,18 +14,13 @@ import 'package:nylon/features/balance/data/data_sources/balance_data_source.dar
 import 'package:nylon/features/balance/data/models/get_balance_model.dart';
 import 'package:nylon/features/balance/data/models/get_cart_balance.dart';
 import 'package:nylon/core/url/url_api.dart';
-import 'package:nylon/core/services/services.dart';
 import 'package:dartz/dartz.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nylon/features/payment/data/models/balance_payment_model.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:nylon/core/services/services.dart';
 import 'package:nylon/features/payment/data/models/payment_model.dart';
 import 'package:nylon/features/payment/data/data_sources/payment_data_source.dart';
-import 'package:nylon/features/payment/data/models/payment_model.dart';
 import 'package:nylon/features/payment/data/models/select_patment.dart';
-import 'package:nylon/features/payment/data/data_sources/payment_data_source.dart';
 import 'package:nylon/features/payment/presentation/screens/payment_webview_screen.dart';
 
 // إنشاء كلاس Crud محلي بدلاً من الاستيراد
@@ -39,11 +34,11 @@ class Crud {
         final data = jsonDecode(response.body);
         return Right(data);
       } else {
-        return Left(StatusRequest.serverFailure);
+        return const Left(StatusRequest.serverFailure);
       }
     } catch (e) {
       print("❌ Crud GET Error: $e");
-      return Left(StatusRequest.serverFailure);
+      return const Left(StatusRequest.serverFailure);
     }
   }
 
@@ -62,11 +57,11 @@ class Crud {
         final responseData = jsonDecode(response.body);
         return Right(responseData);
       } else {
-        return Left(StatusRequest.serverFailure);
+        return const Left(StatusRequest.serverFailure);
       }
     } catch (e) {
       print("❌ Crud POST Error: $e");
-      return Left(StatusRequest.serverFailure);
+      return const Left(StatusRequest.serverFailure);
     }
   }
 }
@@ -164,6 +159,7 @@ class ControllerBalance extends BalanceController {
     });
   }
 
+  @override
   Future<void> processOrderBalanceWithMyFatoorah() async {
     statusRequestpMyFatoorah = StatusRequest.loading;
     update();
@@ -182,7 +178,7 @@ class ControllerBalance extends BalanceController {
           orderId: selectPaymentModel?.orderId?.toString() ?? "");
     } else {
       statusRequestpMyFatoorah = StatusRequest.failure;
-      showSnackBar("فشل في تجهيز الطلب");
+      // showSnackBar("فشل في تجهيز الطلب");
       update();
     }
   }
@@ -285,7 +281,7 @@ class ControllerBalance extends BalanceController {
     return response.fold(
       (failure) {
         print("❌ Error in paymentMyFatoorahForBalance: $failure");
-        showSnackBar("فشل في تنفيذ الدفع");
+        // showSnackBar("فشل في تنفيذ الدفع");
         return;
       },
       (data) {
@@ -356,6 +352,7 @@ class ControllerBalance extends BalanceController {
     );
   }
 
+  @override
   Future addBalace() async {
     if (credit != null) {
       statusRequestAddBal = StatusRequest.loading;
@@ -376,7 +373,7 @@ class ControllerBalance extends BalanceController {
 
       // ✅ لو فشل، أوقف الإجراء واظهر رسالة
       if (fastCheckoutResponse.isLeft()) {
-        showSnackBar("فشل في تجهيز بيانات العميل");
+        // showSnackBar("فشل في تجهيز بيانات العميل");
         statusRequestAddBal = StatusRequest.failure;
         update();
         return;
@@ -529,7 +526,7 @@ class ControllerBalance extends BalanceController {
           orderId: balancePaymentModel?.orderId?.toString() ?? "");
     } else {
       statusRequestpMyFatoorah = StatusRequest.failure;
-      showSnackBar("فشل في تجهيز طلب الرصيد");
+      // showSnackBar("فشل في تجهيز طلب الرصيد");
       update();
     }
   }
@@ -539,8 +536,8 @@ class ControllerBalance extends BalanceController {
 
     final token = _myServices.sharedPreferences.getString("token") ?? "";
 
-    final selectUrl = "${AppApi.selectPaymentUrl}\$token";
-    final confirmUrlBase = "${AppApi.urlMyfatoorah}\$token";
+    const selectUrl = "${AppApi.selectPaymentUrl}\$token";
+    const confirmUrlBase = "${AppApi.urlMyfatoorah}\$token";
 
     // الخطوة 1: استدعاء API لاختيار myfatoorah_pg
     final selectResponse = await _method.postData(
@@ -550,7 +547,7 @@ class ControllerBalance extends BalanceController {
 
     final orderId = selectResponse.fold((l) {
       print("❌ فشل في اختيار وسيلة الدفع: \$l");
-      showSnackBar("فشل في تحديد وسيلة الدفع");
+      // showSnackBar("فشل في تحديد وسيلة الدفع");
       return null;
     }, (r) {
       print("✅ تم تحديد وسيلة الدفع بنجاح: \$r");
@@ -560,13 +557,13 @@ class ControllerBalance extends BalanceController {
     if (orderId == null) return;
 
     // الخطوة 2: تأكيد الدفع واسترجاع رابط الفاتورة
-    final confirmUrl = "\$confirmUrlBase&order_id=\$orderId&is_app=1";
+    const confirmUrl = "\$confirmUrlBase&order_id=\$orderId&is_app=1";
     print("📡 رابط تأكيد الدفع: \$confirmUrl");
 
     final invoiceResp = await _method.getData(url: confirmUrl);
     final invoiceUrl = invoiceResp.fold((l) {
       print("❌ فشل في جلب رابط الفاتورة: \$l");
-      showSnackBar("فشل في توليد رابط الفاتورة");
+      // showSnackBar("فشل في توليد رابط الفاتورة");
       return null;
     }, (r) {
       print("✅ رابط الفاتورة: \${r['invoiceURL']}");
@@ -608,7 +605,7 @@ class ControllerBalance extends BalanceController {
     );
 
     final orderId = response.fold((l) {
-      print("❌ فشل في تحديد وسيلة الدفع: $l");
+      // print("❌ فشل في تحديد وسيلة الدفع: $l");
       return null;
     }, (r) {
       print("✅ رقم الطلب المسترجع: ${r['order_id']}");
@@ -617,7 +614,7 @@ class ControllerBalance extends BalanceController {
 
     if (orderId == null) {
       statusRequestAddBal = StatusRequest.failure;
-      showSnackBar("فشل في تجهيز الطلب");
+      // showSnackBar("فشل في تجهيز الطلب");
       update();
       return;
     }
@@ -644,13 +641,14 @@ class ControllerBalance extends BalanceController {
       statusRequestAddBal = StatusRequest.success;
     } else {
       statusRequestAddBal = StatusRequest.failure;
-      showSnackBar("فشل في توليد رابط الفاتورة");
+      // showSnackBar("فشل في توليد رابط الفاتورة");
     }
 
     update();
   }
 
   // إضافة دالة getPayment المفقودة
+  @override
   Future getPayment() async {
     print("🚀 Loading payment methods...");
     statusRequestGetPayment = StatusRequest.loading;

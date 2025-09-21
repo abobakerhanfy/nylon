@@ -2,24 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:nylon/controller/home/controller_home_widget.dart';
-import 'package:nylon/features/login/presentation/controller/controller_login.dart';
 import 'package:nylon/core/theme/colors_app.dart';
+import 'package:nylon/features/cart/presentation/controller/controller_cart.dart';
 
-class BottomBar extends StatefulWidget {
+class BottomBar extends StatelessWidget {
   const BottomBar({super.key});
-
-  @override
-  State<BottomBar> createState() => _BottomBarState();
-}
-
-class _BottomBarState extends State<BottomBar> {
-  @override
-  void initState() {
-    super.initState();
-
-    // ✅ تأكد من وجود token أو إنشاؤه
-    Get.find<ControllerLogin>().checkAndCreateToken();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,8 +21,8 @@ class _BottomBarState extends State<BottomBar> {
             selectedItemColor: Colors.black,
             unselectedItemColor: AppColors.textColor,
             showUnselectedLabels: true,
-            onTap: (vale) {
-              controller.onTapBottomBar(vale);
+            onTap: (value) {
+              controller.onTapBottomBar(value);
             },
             unselectedLabelStyle: Theme.of(context)
                 .textTheme
@@ -48,11 +35,12 @@ class _BottomBarState extends State<BottomBar> {
                 fontSize: 8, color: Colors.red, fontWeight: FontWeight.normal),
             items: [
               BottomNavigationBarItem(
-                  icon: Padding(
-                    padding: const EdgeInsets.all(4),
-                    child: SvgPicture.asset('images/home.svg'),
-                  ),
-                  label: '16'.tr),
+                icon: Padding(
+                  padding: const EdgeInsets.all(4),
+                  child: SvgPicture.asset('images/home.svg'),
+                ),
+                label: '16'.tr,
+              ),
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: const EdgeInsets.all(4),
@@ -63,7 +51,44 @@ class _BottomBarState extends State<BottomBar> {
               BottomNavigationBarItem(
                 icon: Padding(
                   padding: const EdgeInsets.all(4),
-                  child: SvgPicture.asset('images/cart.svg'),
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      SvgPicture.asset('images/cart.svg'),
+
+                      // ✅ البادج يتبنَى على تحديثات ControllerCart
+                      GetBuilder<ControllerCart>(
+                        builder: (cartController) {
+                          final count =
+                              cartController.getLinesCount(); // ← عدد الأسطر
+                          if (count == 0) return const SizedBox.shrink();
+                          return Positioned(
+                            right: -4,
+                            top: -2,
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColor,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              constraints: const BoxConstraints(
+                                  minWidth: 18, minHeight: 18),
+                              child: Text(
+                                '$count',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
                 ),
                 label: '18'.tr,
               ),

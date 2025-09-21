@@ -1,7 +1,7 @@
 name: nylon
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.2.0+13
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -9,11 +9,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_html: 3.0.0
   cupertino_icons: ^1.0.6
   webview_flutter: ^4.2.2
   font_awesome_flutter: ^10.7.0
-
-
   get: ^4.6.6
   http: ^1.2.1
   shared_preferences: ^2.2.2
@@ -34,17 +33,24 @@ dependencies:
   dropdown_search: ^6.0.1
   drop_down_search_field: ^1.0.6
   image_picker: ^1.1.2
-  firebase_core: ^3.12.1
-  firebase_messaging: ^15.2.4
-  flutter_launcher_icons: ^0.14.3
   url_launcher: ^6.3.1
   change_app_package_name: ^1.5.0
+  
+  # Firebase packages - محدثة لآخر إصدارات
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  # مكتبات Firebase إضافية حسب احتياجك
+  firebase_auth: ^5.3.3        # للمصادقة
+  cloud_firestore: ^5.5.1      # للقاعدة البيانات
+  firebase_analytics: ^11.4.1   # للتحليلات
+  firebase_crashlytics: ^4.2.1  # لتتبع الأخطاء
+  firebase_storage: ^12.4.1     # لتخزين الملفات
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.1
-  flutter_launcher_icons: "^0.14.3"
+  flutter_launcher_icons: ^0.14.3
 
 flutter_icons:
   android: true

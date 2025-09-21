@@ -1,23 +1,32 @@
 class MobileSlider {
   List<ImageData>? image;
-  String? status;
+  String? status; // نخزّن كنص عشان اختلاف النوع من الـ API
   String? sort;
 
   MobileSlider({this.image, this.status, this.sort});
+
   int getSortOrder() {
-    // قد تحتاج لتحويل `sortOrder` إلى قيمة عددية
-    return int.tryParse(sort ?? '0') ?? 0;
+    // يدعم لو sort كانت "3" أو 3 أو null
+    final s = sort?.trim();
+    if (s == null || s.isEmpty) return 0;
+    return int.tryParse(s) ?? 0;
   }
 
   MobileSlider.fromJson(Map<String, dynamic> json) {
     if (json['image'] != null) {
-      image = <ImageData>[];
-      json['image'].forEach((v) {
-        image!.add(ImageData.fromJson(v));
-      });
+      final list = json['image'];
+      if (list is List) {
+        image = list
+            .whereType<Map<String, dynamic>>()
+            .map((v) => ImageData.fromJson(v))
+            .toList();
+      } else {
+        image = <ImageData>[];
+      }
     }
-    status = json['status'];
-    sort = json['sort'];
+    // 👇 تحويل آمن يدعم int أو String أو null
+    status = _asString(json['status']);
+    sort = _asString(json['sort']);
   }
 
   Map<String, dynamic> toJson() {
@@ -37,15 +46,18 @@ class ImageData {
   String? sortOrder;
 
   ImageData({this.image, this.link, this.sortOrder});
+
   int getSortOrder() {
-    // قد تحتاج لتحويل `sortOrder` إلى قيمة عددية
-    return int.tryParse(sortOrder ?? '0') ?? 0;
+    final s = sortOrder?.trim();
+    if (s == null || s.isEmpty) return 0;
+    return int.tryParse(s) ?? 0;
   }
 
   ImageData.fromJson(Map<String, dynamic> json) {
-    image = json['image'];
-    link = json['link'];
-    sortOrder = json['sort_order'];
+    image = _asString(json['image']);
+    link = _asString(json['link']);
+    // أحيانًا بتيجي رقم: 0 أو 1، فحوّلناها لنص آمن
+    sortOrder = _asString(json['sort_order']);
   }
 
   Map<String, dynamic> toJson() {
@@ -55,4 +67,10 @@ class ImageData {
     data['sort_order'] = sortOrder;
     return data;
   }
+}
+
+/// ===== Helpers =====
+String? _asString(dynamic v) {
+  if (v == null) return null;
+  return v.toString();
 }

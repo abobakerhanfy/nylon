@@ -19,7 +19,7 @@ import 'package:nylon/features/payment/presentation/screens/widgets/container_pa
 import 'package:nylon/features/shipping/presentation/controller/controller_shipping.dart';
 
 class OrderConfirmationNew extends StatefulWidget {
-  OrderConfirmationNew({super.key});
+  const OrderConfirmationNew({super.key});
 
   @override
   State<OrderConfirmationNew> createState() => _OrderConfirmationNewState();
@@ -49,13 +49,13 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
 
       if (userId == null || userId.isEmpty) {
         Get.snackbar('تنبيه', 'لا يوجد حساب مسجل، برجاء التحقق أولا');
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         _controller.indexScreensCart = 0;
         _controller.update();
         Get.offAllNamed(NamePages.pVerificationUserCart);
       } else if (cartIsEmpty) {
         Get.snackbar('تنبيه', 'السلة فارغة، الرجاء اضافة منتجات');
-        await Future.delayed(Duration(seconds: 1));
+        await Future.delayed(const Duration(seconds: 1));
         _controller.indexScreensCart = 0;
         _controller.update();
         Get.offAllNamed(NamePages.pCart);
@@ -80,7 +80,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        bottomNavigationBar: Container(
+        bottomNavigationBar: SizedBox(
           height: 180,
           child: SingleChildScrollView(
             child: Column(
@@ -104,8 +104,8 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
                     );
                   }),
                 ),
-                GetBuilder<ControllerOrder>(builder: (_controllerOrder) {
-                  return _controllerOrder.statusRequestSendOrder ==
+                GetBuilder<ControllerOrder>(builder: (controllerOrder) {
+                  return controllerOrder.statusRequestSendOrder ==
                           StatusRequest.loading
                       ? Center(
                           child: CircularProgressIndicator(
@@ -118,7 +118,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
                           onTap: () async {
                             if (_controllerLogin.selectedAddressId != null &&
                                 _controllerPayment.selectCodePayment != '') {
-                              await _controllerOrder.sendIdAddress(
+                              await controllerOrder.sendIdAddress(
                                   idAddress:
                                       _controllerLogin.selectedAddressId!);
 
@@ -130,31 +130,31 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
                                   'bank_transfer') {
                                 if (_controllerPayment.file != null) {
                                   await _controllerPayment.addIamgeBankTr();
-                                  if (_controllerOrder
+                                  if (controllerOrder
                                               .statusRequestSenIdAddress ==
                                           StatusRequest.success &&
                                       _controllerPayment
                                               .statusRequestSelectPayment ==
                                           StatusRequest.success) {
-                                    await _controllerOrder.sendOrder();
+                                    await controllerOrder.sendOrder();
                                     await _controllerPayment
                                         .confirmBankTransfer();
                                   } else {
-                                    _controllerOrder.statusRequestSendOrder =
+                                    controllerOrder.statusRequestSendOrder =
                                         StatusRequest.failure;
-                                    _controllerOrder.update();
-                                    newCustomDialog(
-                                      body: SizedBox(
-                                        height: 40,
-                                        child: PrimaryButton(
-                                          label: 'موافق',
-                                          onTap: () => Get.back(),
-                                        ),
-                                      ),
-                                      title:
-                                          'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
-                                      dialogType: DialogType.info,
-                                    );
+                                    controllerOrder.update();
+                                    // newCustomDialog(
+                                    //   body: SizedBox(
+                                    //     height: 40,
+                                    //     child: PrimaryButton(
+                                    //       label: 'موافق',
+                                    //       onTap: () => Get.back(),
+                                    //     ),
+                                    //   ),
+                                    //   title:
+                                    //       'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
+                                    //   dialogType: DialogType.info,
+                                    // );
                                   }
                                 } else {
                                   newCustomDialog(
@@ -180,35 +180,35 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
                                   "tabby_cc_installments") {
                                 _controllerPayment.paymentTabby();
                               } else {
-                                if (_controllerOrder
-                                            .statusRequestSenIdAddress ==
+                                if (controllerOrder.statusRequestSenIdAddress ==
                                         StatusRequest.success &&
                                     _controllerPayment
                                             .statusRequestSelectPayment ==
                                         StatusRequest.success) {
-                                  await _controllerOrder.sendOrder();
-                                  if (_controllerOrder.statusRequestSendOrder ==
+                                  await controllerOrder.sendOrder();
+                                  if (controllerOrder.statusRequestSendOrder ==
                                       StatusRequest.success) {
                                     await _controllerLogin.resetSession();
-                                    await Future.delayed(Duration(seconds: 3));
+                                    await Future.delayed(
+                                        const Duration(seconds: 3));
                                     Get.offAllNamed(NamePages.pBottomBar);
                                   }
                                 } else {
-                                  _controllerOrder.statusRequestSendOrder =
+                                  controllerOrder.statusRequestSendOrder =
                                       StatusRequest.failure;
-                                  _controllerOrder.update();
-                                  newCustomDialog(
-                                    body: SizedBox(
-                                      height: 40,
-                                      child: PrimaryButton(
-                                        label: 'موافق',
-                                        onTap: () => Get.back(),
-                                      ),
-                                    ),
-                                    title:
-                                        'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
-                                    dialogType: DialogType.info,
-                                  );
+                                  controllerOrder.update();
+                                  // newCustomDialog(
+                                  //   body: SizedBox(
+                                  //     height: 40,
+                                  //     child: PrimaryButton(
+                                  //       label: 'موافق',
+                                  //       onTap: () => Get.back(),
+                                  //     ),
+                                  //   ),
+                                  //   title:
+                                  //       'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
+                                  //   dialogType: DialogType.info,
+                                  // );
                                 }
                               }
                             } else {
@@ -238,7 +238,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
             builder: (context, boxSize) {
               return ListView(
                 children: [
-                  AddressUserOnCart(),
+                  const AddressUserOnCart(),
                   const WidgetPaymentDataCart(),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   FreeShipping(
@@ -265,14 +265,14 @@ class AddressUserOnCart extends StatefulWidget {
 class _AddressUserOnCartState extends State<AddressUserOnCart> {
   String? _loadingAddressId; // فوق الكلاس
 
-  bool _isUpdating = false;
+  final bool _isUpdating = false;
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ControllerLogin>(builder: (_contrrolerLogin) {
+    return GetBuilder<ControllerLogin>(builder: (contrrolerLogin) {
       return HandlingDataView(
-        statusRequest: _contrrolerLogin.statusRequestgetUserBP!,
-        widget: GetBuilder<ControllerLogin>(builder: (_contrrolerLogin) {
+        statusRequest: contrrolerLogin.statusRequestgetUserBP!,
+        widget: GetBuilder<ControllerLogin>(builder: (contrrolerLogin) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -294,22 +294,22 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
                 ],
               ),
               SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-              _contrrolerLogin.addressModel?.data!.address != null &&
-                      _contrrolerLogin.addressModel!.data!.address!.isNotEmpty
+              contrrolerLogin.addressModel?.data!.address != null &&
+                      contrrolerLogin.addressModel!.data!.address!.isNotEmpty
                   ? Container(
                       padding: const EdgeInsets.all(6),
                       color: Colors.white,
                       child: ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _contrrolerLogin
+                        itemCount: contrrolerLogin
                                 .addressModel!.data!.address?.length ??
                             0,
                         separatorBuilder: (context, i) =>
                             const SizedBox(height: 10),
                         itemBuilder: (context, i) {
                           Address address =
-                              _contrrolerLogin.addressModel!.data!.address![i];
+                              contrrolerLogin.addressModel!.data!.address![i];
                           return Container(
                             color: AppColors.background,
                             child: Row(
@@ -323,29 +323,29 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
                                   ),
                                 ),
                                 Checkbox(
-                                    value: _contrrolerLogin.selectedAddressId ==
+                                    value: contrrolerLogin.selectedAddressId ==
                                         address.addressId,
                                     activeColor: AppColors.primaryColor,
                                     onChanged: (value) async {
                                       if (value == true &&
-                                          _contrrolerLogin.selectedAddressId !=
+                                          contrrolerLogin.selectedAddressId !=
                                               address.addressId &&
                                           _loadingAddressId !=
                                               address.addressId) {
                                         _loadingAddressId = address.addressId;
                                         setState(() {});
 
-                                        _contrrolerLogin.onSelectIdAddress(
+                                        contrrolerLogin.onSelectIdAddress(
                                             address.addressId!, true);
 
                                         if (!Get.isSnackbarOpen) {
-                                          Get.snackbar(
-                                            '212'.tr, // جاري التحديث
-                                            '213'.tr, // يتم تحديث الفاتورة...
-                                            snackPosition: SnackPosition.TOP,
-                                            duration:
-                                                const Duration(seconds: 1),
-                                          );
+                                          // Get.snackbar(
+                                          //   '212'.tr, // جاري التحديث
+                                          //   '213'.tr, // يتم تحديث الفاتورة...
+                                          //   snackPosition: SnackPosition.TOP,
+                                          //   duration:
+                                          //       const Duration(seconds: 1),
+                                          // );
                                         }
 
                                         await Get.find<ControllerOrder>()
@@ -382,7 +382,7 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
             ],
           );
         }),
-        onRefresh: () => _contrrolerLogin.getCustomerBypId(),
+        onRefresh: () => contrrolerLogin.getCustomerBypId(),
       );
     });
   }
@@ -395,9 +395,9 @@ class WidgetPaymentDataCart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ControllerPayment>(builder: (_controllerPayment) {
+    return GetBuilder<ControllerPayment>(builder: (controllerPayment) {
       return HandlingDataView(
-        statusRequest: _controllerPayment.statusRequestGetPayment!,
+        statusRequest: controllerPayment.statusRequestGetPayment!,
         widget: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -412,11 +412,11 @@ class WidgetPaymentDataCart extends StatelessWidget {
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
             // 🔥 هنا استبدلنا الـ ListView بـ paymentsWidget
-            paymentsWidget(context, _controllerPayment),
+            paymentsWidget(context, controllerPayment),
           ],
         ),
         onRefresh: () {
-          _controllerPayment.getPayment();
+          controllerPayment.getPayment();
         },
       );
     });
@@ -424,8 +424,8 @@ class WidgetPaymentDataCart extends StatelessWidget {
 
   // 👇 إنشاء ميثود جديدة لعرض الدفع
   Widget paymentsWidget(
-      BuildContext context, ControllerPayment _controllerPayment) {
-    final payments = _controllerPayment.paymentsDataList;
+      BuildContext context, ControllerPayment controllerPayment) {
+    final payments = controllerPayment.paymentsDataList;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -441,13 +441,13 @@ class WidgetPaymentDataCart extends StatelessWidget {
             style: const TextStyle(color: Colors.black, fontSize: 18),
           ),
           const SizedBox(height: 16),
-          Text(
+          const Text(
             'تم اختيار وسيلة الدفع',
-            style: const TextStyle(color: Colors.black, fontSize: 16),
+            style: TextStyle(color: Colors.black, fontSize: 16),
           ),
           const SizedBox(height: 16),
           ContainerPaymentData(
-            codePayment: _controllerPayment.selectCodePayment,
+            codePayment: controllerPayment.selectCodePayment,
             paymentsData: payments[0],
           ),
         ] else if (payments.length > 1) ...[
@@ -536,10 +536,10 @@ class InvoiceWithAnimation extends StatefulWidget {
   final bool animate;
 
   const InvoiceWithAnimation({
-    Key? key,
+    super.key,
     required this.children,
     required this.animate,
-  }) : super(key: key);
+  });
 
   @override
   State<InvoiceWithAnimation> createState() => _InvoiceWithAnimationState();

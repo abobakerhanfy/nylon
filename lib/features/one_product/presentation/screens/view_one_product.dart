@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:flutter_html/flutter_html.dart'; // تأكد إنه فوق
+
 import 'package:intl/intl.dart';
 import 'package:nylon/controller/home/controller_home_widget.dart';
 import 'package:nylon/core/function/hindling_data_view.dart';
@@ -33,11 +35,13 @@ class _ViewOneProductState extends State<ViewOneProduct> {
         bottomNavigationBar: SafeArea(
             child: Padding(
           padding: MediaQuery.of(context).viewInsets,
-          child: BottomNavigationBarOneProduct(),
+          child: const BottomNavigationBarOneProduct(),
         )),
+        // الحل الأول: تعديل السطر المسبب للمشكلة في appBar
         appBar: customAppBar(
-            label: translate(
-                controller.products!.name, controller.products!.name)!,
+            label: translate(controller.products?.name ?? "Loading...",
+                    controller.products?.name ?? "Loading...") ??
+                (controller.products?.name ?? "Product"),
             isBack: true,
             onTap: () {
               ControllerHomeWidget controllerHomeWidget = Get.find();
@@ -150,7 +154,14 @@ class _ViewOneProductState extends State<ViewOneProduct> {
     });
   }
 
+// تحديث دالة _buildProductDetails مع فحص null
   Widget _buildProductDetails(BuildContext context) {
+    // فحص إذا كانت البيانات متاحة
+    if (_controller.productModel?.product == null ||
+        _controller.productModel!.product!.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -162,9 +173,12 @@ class _ViewOneProductState extends State<ViewOneProduct> {
             children: [
               Text(
                 translate(
-                  _controller.productModel!.product!.first.name,
-                  _controller.productModel!.product!.first.name,
-                )!,
+                      _controller.productModel!.product!.first.name ??
+                          "Product Name",
+                      _controller.productModel!.product!.first.name ??
+                          "Product Name",
+                    ) ??
+                    "Product Name",
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
@@ -174,9 +188,7 @@ class _ViewOneProductState extends State<ViewOneProduct> {
               ),
               if (_controller.productModel!.discounts != null &&
                   _controller.productModel!.discounts!.isNotEmpty) ...{
-                const SizedBox(
-                  height: 6,
-                ),
+                const SizedBox(height: 6),
                 Container(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -195,11 +207,14 @@ class _ViewOneProductState extends State<ViewOneProduct> {
             ],
           ),
         ),
-        const SizedBox(
-          width: 5,
-        ),
+        const SizedBox(width: 5),
         GetBuilder<ControllerOneProduct>(
           builder: (controller) {
+            if (controller.productModel?.product == null ||
+                controller.productModel!.product!.isEmpty) {
+              return const SizedBox.shrink();
+            }
+
             final product = controller.productModel!.product!.first;
 
             return Column(
@@ -229,12 +244,12 @@ class _ViewOneProductState extends State<ViewOneProduct> {
                     ],
                   ),
 
-                // السعر النهائي بعد الخصم أو الأساسي
+                // السعر النهائي
                 Row(
                   children: [
                     Text(
                       controller.productModel!
-                          .calculatePriceWithDiscount(controller.count)
+                          .calculatePriceWithDiscount(controller.count ?? 1)
                           .toStringAsFixed(2),
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColors.primaryColor,
@@ -276,8 +291,19 @@ class _ViewOneProductState extends State<ViewOneProduct> {
     );
   }
 
+// تحديث _buildProductDescription مع فحص null
   Widget _buildProductDescription(
       BuildContext context, BoxConstraints boxSize) {
+    final rawHtml = _controller.productModel?.product?.first.description ?? '';
+
+    if (rawHtml.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final normalized = rawHtml
+        .replaceAll('&nbsp;', '<br/>')
+        .replaceAllMapped(RegExp(r'\.\s*'), (m) => '.<br/>');
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -294,19 +320,18 @@ class _ViewOneProductState extends State<ViewOneProduct> {
           color: AppColors.primaryColor,
         ),
         SizedBox(height: boxSize.maxHeight * 0.01),
-        Text(
-          translate(
-              formatDescription(
-                  _controller.productModel!.product!.first.description ?? ''),
-              formatDescription(
-                  _controller.productModel!.product!.first.description ?? ''))!,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColors.textColor1,
-                fontSize: 13,
-                height: 2,
-              ),
+        Html(
+          data: translate(normalized, normalized) ?? normalized,
+          style: {
+            "body": Style(
+              fontSize: FontSize(13),
+              lineHeight: LineHeight.number(1.8),
+              color: AppColors.textColor1,
+            ),
+            "li": Style(margin: Margins.only(bottom: 6)),
+          },
         ),
-        if (_controller.productModel!.discounts != null &&
+        if (_controller.productModel?.discounts != null &&
             _controller.productModel!.discounts!.isNotEmpty)
           Center(
             child: Container(
@@ -314,18 +339,19 @@ class _ViewOneProductState extends State<ViewOneProduct> {
               alignment: Alignment.center,
               padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
-                color: AppColors.primaryColor, // Colors.blue[700],
+                color: AppColors.primaryColor,
                 borderRadius: BorderRadius.circular(6),
               ),
               child: Text(
-                '${"200".tr} ${_controller.productModel!.discounts!.first.quantity} ${"199".tr} ${_controller.productModel!.discounts!.first.price!} ',
+                '${"200".tr} ${_controller.productModel!.discounts!.first.quantity ?? ""} '
+                '${"199".tr} ${_controller.productModel!.discounts!.first.price ?? ""} ',
                 style: Theme.of(context)
                     .textTheme
                     .bodySmall
                     ?.copyWith(color: Colors.white),
               ),
             ),
-          )
+          ),
       ],
     );
   }
