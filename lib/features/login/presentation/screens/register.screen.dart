@@ -101,7 +101,7 @@ class RegisterScreen extends StatelessWidget {
                         ),
                         CustomFieldPhone(
                           controller: controller.controllerPhone,
-                          hint: '7878'.tr,
+                          hint: '592090000'.tr,
                           validators: validatePhone,
                         ),
                         SizedBox(

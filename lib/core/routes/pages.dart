@@ -29,8 +29,11 @@ import '../../features/login/presentation/screens/sign_in.dart';
 import '../../features/login/presentation/screens/verification_code.dart';
 import '../../view/profile/language.dart';
 import 'name_pages.dart';
+import 'package:nylon/core/boot/splash_gate.dart';
+import 'package:nylon/core/routes/middlewares/session_middleware.dart';
 
 List<GetPage> routes = [
+  GetPage(name: NamePages.pSplashGate, page: () => const SplashGate()),
   GetPage(
       name: NamePages.pFirst,
       page: () => const FirstPage(),
@@ -51,7 +54,11 @@ List<GetPage> routes = [
       name: NamePages.pOneCategory,
       page: () => const ViewOneCategory(),
       binding: ControllerOneCategoryBiding()),
-  GetPage(name: NamePages.pCart, page: () => const ScreenCart()),
+  GetPage(
+    name: NamePages.pCart,
+    page: () => const ScreenCart(),
+    middlewares: [SessionMiddleware()],
+  ),
   GetPage(name: NamePages.pLanguage, page: () => Language()),
   GetPage(name: NamePages.pMyOrders, page: () => const MyOrders()),
   GetPage(

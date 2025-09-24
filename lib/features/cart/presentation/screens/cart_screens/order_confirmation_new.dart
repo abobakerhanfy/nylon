@@ -25,12 +25,35 @@ class OrderConfirmationNew extends StatefulWidget {
   State<OrderConfirmationNew> createState() => _OrderConfirmationNewState();
 }
 
-class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
+class _OrderConfirmationNewState extends State<OrderConfirmationNew>
+    with TickerProviderStateMixin {
   final ControllerCart _controller = Get.put(ControllerCart());
   final ControllerPayment _controllerPayment = Get.put(ControllerPayment());
   final ControllerShipping _controllerShipping = Get.put(ControllerShipping());
   final ControllerOrder _controllerOrder = Get.put(ControllerOrder());
   final ControllerLogin _controllerLogin = Get.put(ControllerLogin());
+  late AnimationController _invoiceAnimCtrl;
+  late Animation<double> _invoiceScale;
+  late Animation<Offset> _invoiceSlide;
+
+  void _initInvoiceAnimation() {
+    _invoiceAnimCtrl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 450),
+    );
+    _invoiceScale = Tween<double>(begin: 0.98, end: 1.0).animate(
+      CurvedAnimation(parent: _invoiceAnimCtrl, curve: Curves.easeOutBack),
+    );
+    _invoiceSlide =
+        Tween<Offset>(begin: const Offset(0, -0.06), end: Offset.zero).animate(
+      CurvedAnimation(parent: _invoiceAnimCtrl, curve: Curves.easeOut),
+    );
+  }
+
+  void _triggerInvoiceAnimation() {
+    // “نبضة” سريعة
+    _invoiceAnimCtrl.forward(from: 0.0);
+  }
 
   @override
   void initState() {
@@ -61,6 +84,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
         Get.offAllNamed(NamePages.pCart);
       }
     });
+    _initInvoiceAnimation();
   }
 
   @override
@@ -80,56 +104,118 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
       },
       child: Scaffold(
         backgroundColor: Colors.white,
-        bottomNavigationBar: SizedBox(
-          height: 180,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Obx(() {
-                    final cartModel = _controller.cartModel.value;
-                    return InvoiceWithAnimation(
-                      animate: true,
-                      children: List.generate(
-                        cartModel?.totals?.length ?? 0,
-                        (i) => invoiceRow(
-                          title: cartModel?.totals?[i].title ?? '',
-                          priceWidget:
-                              textWithRiyal(cartModel?.totals?[i].text ?? ''),
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-                GetBuilder<ControllerOrder>(builder: (controllerOrder) {
-                  return controllerOrder.statusRequestSendOrder ==
-                          StatusRequest.loading
-                      ? Center(
-                          child: CircularProgressIndicator(
-                            color: AppColors.primaryColor,
-                          ),
-                        )
-                      : ButtonOnCart(
-                          width: MediaQuery.of(context).size.width * 0.80,
-                          label: '36'.tr,
-                          onTap: () async {
-                            if (_controllerLogin.selectedAddressId != null &&
-                                _controllerPayment.selectCodePayment != '') {
-                              await controllerOrder.sendIdAddress(
-                                  idAddress:
-                                      _controllerLogin.selectedAddressId!);
 
-                              await _controllerPayment.selectPayment(
-                                  paymentCode:
-                                      _controllerPayment.selectCodePayment);
+        // ADD: نخلي الـ bottom bar داخل SafeArea عشان ما يختفيش تحت حافة الشاشة
+        bottomNavigationBar: SafeArea(
+          top: false,
+          child: SizedBox(
+            height: 180,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  ConstrainedBox(
+                    // ADD: قلّل maxHeight من 140 إلى 120 علشان يفضل فيه مساحة للزر دايمًا
+                    constraints: const BoxConstraints(maxHeight: 120), // ADD
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: const InvoiceAnimatedTotals(),
+                    ),
+                  ),
+                  GetBuilder<ControllerOrder>(builder: (controllerOrder) {
+                    return controllerOrder.statusRequestSendOrder ==
+                            StatusRequest.loading
+                        ? Center(
+                            child: CircularProgressIndicator(
+                              color: AppColors.primaryColor,
+                            ),
+                          )
+                        : ButtonOnCart(
+                            width: MediaQuery.of(context).size.width * 0.80,
+                            label: '36'.tr,
+                            onTap: () async {
+                              // ADD: امنع الدبل-تاب وخلّي الزر يتحول لـ "جاري التنفيذ"
+                              if (controllerOrder.statusRequestSendOrder ==
+                                  StatusRequest.loading) return; // ADD
+                              controllerOrder.statusRequestSendOrder =
+                                  StatusRequest.loading; // ADD
+                              controllerOrder.update(); // ADD
 
-                              if (_controllerPayment.selectCodePayment ==
-                                  'bank_transfer') {
-                                if (_controllerPayment.file != null) {
-                                  await _controllerPayment.addIamgeBankTr();
+                              if (_controllerLogin.selectedAddressId != null &&
+                                  _controllerPayment.selectCodePayment != '') {
+                                await controllerOrder.sendIdAddress(
+                                    idAddress:
+                                        _controllerLogin.selectedAddressId!);
+
+                                await _controllerPayment.selectPayment(
+                                    paymentCode:
+                                        _controllerPayment.selectCodePayment);
+
+                                if (_controllerPayment.selectCodePayment ==
+                                    'bank_transfer') {
+                                  if (_controllerPayment.file != null) {
+                                    await _controllerPayment.addIamgeBankTr();
+                                    if (controllerOrder
+                                                .statusRequestSenIdAddress ==
+                                            StatusRequest.success &&
+                                        _controllerPayment
+                                                .statusRequestSelectPayment ==
+                                            StatusRequest.success) {
+                                      await controllerOrder.sendOrder();
+                                      await _controllerPayment
+                                          .confirmBankTransfer();
+
+                                      // ADD: نجاح
+                                      // (لو هتتنقل لصفحة تانية مش لازم ترجع الحالة)
+                                    } else {
+                                      controllerOrder.statusRequestSendOrder =
+                                          StatusRequest.failure; // ADD
+                                      controllerOrder.update(); // ADD
+                                      // newCustomDialog( ... )  // موجود في كودك المُعلّق
+                                    }
+                                  } else {
+                                    newCustomDialog(
+                                      body: SizedBox(
+                                        height: 40,
+                                        child: PrimaryButton(
+                                          label: 'confirm'.tr,
+                                          onTap: () => Get.back(),
+                                        ),
+                                      ),
+                                      title: 'send_transfer_image'.tr,
+                                      dialogType: DialogType.info,
+                                    );
+                                    controllerOrder.statusRequestSendOrder =
+                                        StatusRequest.failure; // ADD
+                                    controllerOrder.update(); // ADD
+                                  }
+                                } else if (_controllerPayment
+                                        .selectCodePayment ==
+                                    'myfatoorah_pg') {
+                                  await _controllerPayment.paymentMyFatoorah();
+
+                                  controllerOrder.statusRequestSendOrder =
+                                      StatusRequest
+                                          .failure; // ADD (نرجّعها لو لسه على نفس الصفحة)
+                                  controllerOrder.update(); // ADD
+                                } else if (_controllerPayment
+                                        .selectCodePayment ==
+                                    "tamarapay") {
+                                  await _controllerPayment.paymentTamaraPay();
+
+                                  controllerOrder.statusRequestSendOrder =
+                                      StatusRequest.failure; // ADD
+                                  controllerOrder.update(); // ADD
+                                } else if (_controllerPayment
+                                        .selectCodePayment ==
+                                    "tabby_cc_installments") {
+                                  _controllerPayment.paymentTabby();
+
+                                  controllerOrder.statusRequestSendOrder =
+                                      StatusRequest.failure; // ADD
+                                  controllerOrder.update(); // ADD
+                                } else {
                                   if (controllerOrder
                                               .statusRequestSenIdAddress ==
                                           StatusRequest.success &&
@@ -137,101 +223,51 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
                                               .statusRequestSelectPayment ==
                                           StatusRequest.success) {
                                     await controllerOrder.sendOrder();
-                                    await _controllerPayment
-                                        .confirmBankTransfer();
+                                    if (controllerOrder
+                                            .statusRequestSendOrder ==
+                                        StatusRequest.success) {
+                                      await _controllerLogin.resetSession();
+                                      await Future.delayed(
+                                          const Duration(seconds: 3));
+                                      Get.offAllNamed(NamePages.pBottomBar);
+                                      // NOTE: بننتقل لشاشة تانية؛ مفيش داعي لتغيير الحالة هنا
+                                    } else {
+                                      controllerOrder.statusRequestSendOrder =
+                                          StatusRequest.failure; // ADD
+                                      controllerOrder.update(); // ADD
+                                    }
                                   } else {
                                     controllerOrder.statusRequestSendOrder =
-                                        StatusRequest.failure;
-                                    controllerOrder.update();
-                                    // newCustomDialog(
-                                    //   body: SizedBox(
-                                    //     height: 40,
-                                    //     child: PrimaryButton(
-                                    //       label: 'موافق',
-                                    //       onTap: () => Get.back(),
-                                    //     ),
-                                    //   ),
-                                    //   title:
-                                    //       'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
-                                    //   dialogType: DialogType.info,
-                                    // );
+                                        StatusRequest.failure; // ADD
+                                    controllerOrder.update(); // ADD
+                                    // newCustomDialog( ... ) // موجود في كودك المُعلّق
                                   }
-                                } else {
-                                  newCustomDialog(
-                                    body: SizedBox(
-                                      height: 40,
-                                      child: PrimaryButton(
-                                        label: 'موافق',
-                                        onTap: () => Get.back(),
-                                      ),
-                                    ),
-                                    title:
-                                        "الرجاء ارسال صوره التحويل \n حتي نتمكن من تنفيذ الطلب ",
-                                    dialogType: DialogType.info,
-                                  );
                                 }
-                              } else if (_controllerPayment.selectCodePayment ==
-                                  'myfatoorah_pg') {
-                                await _controllerPayment.paymentMyFatoorah();
-                              } else if (_controllerPayment.selectCodePayment ==
-                                  "tamarapay") {
-                                await _controllerPayment.paymentTamaraPay();
-                              } else if (_controllerPayment.selectCodePayment ==
-                                  "tabby_cc_installments") {
-                                _controllerPayment.paymentTabby();
                               } else {
-                                if (controllerOrder.statusRequestSenIdAddress ==
-                                        StatusRequest.success &&
-                                    _controllerPayment
-                                            .statusRequestSelectPayment ==
-                                        StatusRequest.success) {
-                                  await controllerOrder.sendOrder();
-                                  if (controllerOrder.statusRequestSendOrder ==
-                                      StatusRequest.success) {
-                                    await _controllerLogin.resetSession();
-                                    await Future.delayed(
-                                        const Duration(seconds: 3));
-                                    Get.offAllNamed(NamePages.pBottomBar);
-                                  }
-                                } else {
-                                  controllerOrder.statusRequestSendOrder =
-                                      StatusRequest.failure;
-                                  controllerOrder.update();
-                                  // newCustomDialog(
-                                  //   body: SizedBox(
-                                  //     height: 40,
-                                  //     child: PrimaryButton(
-                                  //       label: 'موافق',
-                                  //       onTap: () => Get.back(),
-                                  //     ),
-                                  //   ),
-                                  //   title:
-                                  //       'فشل في ارسال البيانات الرجاء المحاولة مره اخري',
-                                  //   dialogType: DialogType.info,
-                                  // );
-                                }
-                              }
-                            } else {
-                              newCustomDialog(
-                                body: SizedBox(
-                                  height: 40,
-                                  child: PrimaryButton(
-                                    label: 'موافق',
-                                    onTap: () => Get.back(),
+                                newCustomDialog(
+                                  body: SizedBox(
+                                    height: 40,
+                                    child: PrimaryButton(
+                                      label: 'confirm'.tr,
+                                      onTap: () => Get.back(),
+                                    ),
                                   ),
-                                ),
-                                title:
-                                    'الرجاء اختيار العنوان ووسيلة الدفع \n حتي نتمكن من تنفيذ طلبك',
-                                dialogType: DialogType.warning,
-                              );
-                            }
-                          },
-                        );
-                }),
-              ],
+                                  title: 'select_address_payment'.tr,
+                                  dialogType: DialogType.warning,
+                                );
+                                controllerOrder.statusRequestSendOrder =
+                                    StatusRequest.failure; // ADD
+                                controllerOrder.update(); // ADD
+                              }
+                            },
+                          );
+                  }),
+                ],
+              ),
             ),
           ),
         ),
+
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: LayoutBuilder(
@@ -239,7 +275,10 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
               return ListView(
                 children: [
                   const AddressUserOnCart(),
-                  const WidgetPaymentDataCart(),
+                  WidgetPaymentDataCart(
+                    onPaymentChanged:
+                        _triggerInvoiceAnimation, // ← كل ما وسيلة الدفع تتغيّر انفّذ الأنيميشن
+                  ),
                   SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                   FreeShipping(
                     hasReachedTarget: _controller.hasReachedTarget,
@@ -388,14 +427,30 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
   }
 }
 
+enum PaymentAnimStyle { fade, slide, scale, combo }
+
 class WidgetPaymentDataCart extends StatelessWidget {
+  // ← غير النوع من هنا لو عايز شكل مختلف للأنيميشن
+  static const PaymentAnimStyle animStyle = PaymentAnimStyle.fade;
+
+  /// كولباك (اختياري) لتشغيل أنيميشن خارجي زي الفاتورة
+  final VoidCallback? onPaymentChanged;
+
   const WidgetPaymentDataCart({
     super.key,
+    this.onPaymentChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return GetBuilder<ControllerPayment>(builder: (controllerPayment) {
+      // ✅ ننادي الكولباك بعد تغير وسيلة الدفع
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (controllerPayment.selectCodePayment.isNotEmpty) {
+          onPaymentChanged?.call();
+        }
+      });
+
       return HandlingDataView(
         statusRequest: controllerPayment.statusRequestGetPayment!,
         widget: Column(
@@ -411,8 +466,64 @@ class WidgetPaymentDataCart extends StatelessWidget {
             ),
             SizedBox(height: MediaQuery.of(context).size.height * 0.02),
 
-            // 🔥 هنا استبدلنا الـ ListView بـ paymentsWidget
-            paymentsWidget(context, controllerPayment),
+            /// 🔥 AnimatedSwitcher مع أنيميشن مخصص
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 380),
+              switchInCurve: Curves.easeOut,
+              switchOutCurve: Curves.easeIn,
+              transitionBuilder: (child, animation) {
+                final curved = CurvedAnimation(
+                  parent: animation,
+                  curve: Curves.easeOutCubic,
+                );
+
+                switch (animStyle) {
+                  case PaymentAnimStyle.fade:
+                    return FadeTransition(opacity: curved, child: child);
+
+                  case PaymentAnimStyle.slide:
+                    return SlideTransition(
+                      position: Tween<Offset>(
+                        begin: const Offset(0, 0.1),
+                        end: Offset.zero,
+                      ).animate(curved),
+                      child: child,
+                    );
+
+                  case PaymentAnimStyle.scale:
+                    return ScaleTransition(
+                      scale:
+                          Tween<double>(begin: 0.95, end: 1.0).animate(curved),
+                      child: child,
+                    );
+
+                  case PaymentAnimStyle.combo:
+                  default:
+                    return FadeTransition(
+                      opacity: curved,
+                      child: SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 0.08),
+                          end: Offset.zero,
+                        ).animate(curved),
+                        child: ScaleTransition(
+                          scale: Tween<double>(begin: 0.97, end: 1.0)
+                              .animate(curved),
+                          child: child,
+                        ),
+                      ),
+                    );
+                }
+              },
+              child: KeyedSubtree(
+                key: ValueKey(
+                  controllerPayment.selectCodePayment.isEmpty
+                      ? 'none'
+                      : controllerPayment.selectCodePayment,
+                ),
+                child: paymentsWidget(context, controllerPayment),
+              ),
+            ),
           ],
         ),
         onRefresh: () {
@@ -422,7 +533,7 @@ class WidgetPaymentDataCart extends StatelessWidget {
     });
   }
 
-  // 👇 إنشاء ميثود جديدة لعرض الدفع
+  /// 👇 ويدجت عرض وسائل الدفع
   Widget paymentsWidget(
       BuildContext context, ControllerPayment controllerPayment) {
     final payments = controllerPayment.paymentsDataList;
@@ -581,6 +692,7 @@ class _InvoiceWithAnimationState extends State<InvoiceWithAnimation>
   @override
   void dispose() {
     _controller.dispose();
+    _controller.dispose(); // ✅
     super.dispose();
   }
 
@@ -592,5 +704,80 @@ class _InvoiceWithAnimationState extends State<InvoiceWithAnimation>
         children: widget.children, // 👈
       ),
     );
+  }
+}
+
+enum InvoiceAnimStyle { fade, slide, scale, combo }
+
+class InvoiceAnimatedTotals extends StatelessWidget {
+  static const Duration duration = Duration(milliseconds: 350);
+
+  const InvoiceAnimatedTotals({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cart = Get.find<ControllerCart>();
+    final pay = Get.find<ControllerPayment>();
+
+    return Obx(() {
+      final cartModel = cart.cartModel.value;
+
+      // مفتاح يجبر الـ AnimatedSwitcher يحدّث عند تغيّر وسيلة الدفع أو totals
+      final paymentCode =
+          pay.selectCodePayment.isEmpty ? 'none' : pay.selectCodePayment;
+      final totalsKey = _buildTotalsKey(cartModel?.totals);
+      final compositeKey = '$paymentCode|$totalsKey';
+
+      return AnimatedSwitcher(
+        duration: duration,
+        switchInCurve: Curves.easeOut,
+        switchOutCurve: Curves.easeIn,
+        transitionBuilder: (child, animation) {
+          final curved =
+              CurvedAnimation(parent: animation, curve: Curves.easeOutCubic);
+          return FadeTransition(
+            opacity: curved,
+            child: ScaleTransition(
+              scale: Tween<double>(begin: 0.95, end: 1.0).animate(curved),
+              child: child,
+            ),
+          );
+        },
+        child: KeyedSubtree(
+          key: ValueKey<String>(compositeKey),
+          child: cartModel?.totals == null || cartModel!.totals!.isEmpty
+              ? Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: SizedBox(
+                    height: 24,
+                    width: 24,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : Column(
+                  children: List.generate(
+                    cartModel.totals!.length,
+                    (i) => invoiceRow(
+                      title: cartModel.totals![i].title ?? '',
+                      priceWidget:
+                          textWithRiyal(cartModel.totals![i].text ?? ''),
+                    ),
+                  ),
+                ),
+        ),
+      );
+    });
+  }
+
+  String _buildTotalsKey(List<dynamic>? totals) {
+    if (totals == null || totals.isEmpty) return 'empty';
+    final buffer = StringBuffer();
+    for (final t in totals) {
+      buffer.write(t.title ?? '');
+      buffer.write('|');
+      buffer.write(t.text ?? '');
+      buffer.write('||');
+    }
+    return buffer.toString();
   }
 }

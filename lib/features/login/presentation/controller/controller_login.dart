@@ -15,6 +15,9 @@ import 'package:nylon/features/login/data/data_sources/login_data_source.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:nylon/core/url/url_api.dart';
 import 'package:nylon/core/function/method_GPUD.dart'; // لازم هذا السطر فوق
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:get/get.dart';
+import 'package:nylon/features/payment/presentation/controller/controller_payment.dart';
 
 abstract class LoginController extends GetxController {
   Future createToken();
@@ -31,9 +34,33 @@ abstract class LoginController extends GetxController {
 }
 
 class ControllerLogin extends LoginController {
-  final LoginDataSourceImpl _loginDataSourceImpl =
-      LoginDataSourceImpl(Get.find());
+  final isLoggedIn = false.obs;
+  String? apiToken;
+  String? customerId;
+  bool isPhoneVerified = false;
+  late final LoginDataSourceImpl _loginDataSourceImpl;
+
   final MyServices _myServices = Get.find();
+  final showOtp = false.obs;
+  bool get hasVerifiedSession => _hasVerifiedSession;
+// method جديدة للتحقق من session الكارت
+  bool get hasCartSession {
+    final phoneOnCart = _myServices.sharedPreferences.getString('PhoneOnCart');
+    return hasVerifiedSession && phoneOnCart?.isNotEmpty == true;
+  }
+
+  String? get savedPhoneOnCart =>
+      _myServices.sharedPreferences.getString('PhoneOnCart'); // ← غيرها هنا
+  final otp1 = TextEditingController();
+  final otp2 = TextEditingController();
+  final otp3 = TextEditingController();
+  final otp4 = TextEditingController();
+
+  final f1 = FocusNode();
+  final f2 = FocusNode();
+  final f3 = FocusNode();
+  final f4 = FocusNode();
+
   MyServices get myServices => _myServices;
 
   StatusRequest? statusRequestToken,
@@ -65,6 +92,9 @@ class ControllerLogin extends LoginController {
   String? inputCodeCart;
   Future<void> resetSession() async {
     final token = _myServices.sharedPreferences.getString('token');
+    await _myServices.sharedPreferences.remove('Phone');
+    await _myServices.sharedPreferences.remove('PhoneOnCart'); // ← حطه هنا
+    await _myServices.sharedPreferences.remove('Phon_User');
 
     if (token != null) {
       final method = Method();
@@ -81,6 +111,9 @@ class ControllerLogin extends LoginController {
     await _myServices.sharedPreferences.remove('customer_id'); // احتياطًا
     await _myServices.sharedPreferences.remove('address_id');
     await _myServices.sharedPreferences.remove('payment_method');
+    await _myServices.sharedPreferences
+        .remove('is_phone_verified'); // ← أضف السطر ده
+
     print(
         "🧹 After reset, UserId = ${_myServices.sharedPreferences.getString('UserId')}");
 
@@ -109,46 +142,6 @@ class ControllerLogin extends LoginController {
     statusRequestSendCodeOnCart = null;
     update();
   }
-
-  // Future<void> resetSession() async {
-  //   final token = _myServices.sharedPreferences.getString('token');
-
-  //   if (token != null) {
-  //     final method = Method();
-  //     await method.getData(url: '${AppApi.logoutSession}$token');
-  //     await _myServices.sharedPreferences.remove('token');
-  //     await _myServices.sharedPreferences.remove('lastTokenDate');
-  //     await _myServices.sharedPreferences.remove('UserId');
-  //     await _myServices.sharedPreferences.remove('Phone');
-  //     await _myServices.sharedPreferences.remove('Phon_User');
-  //     await _myServices.sharedPreferences.remove('NewCustomer_id');
-  //     await _myServices.sharedPreferences.remove('customer_id'); // احتياطًا
-  //     await _myServices.sharedPreferences.remove('address_id');
-  //     await _myServices.sharedPreferences.remove('payment_method');
-
-  //     await _myServices.sharedPreferences.remove('customer_id');
-  //   }
-
-  //   var result = await _loginDataSourceImpl.fCreateToken();
-
-  //   result.fold((failure) {
-  //     print("فشل في إنشاء session جديد: $failure");
-  //   }, (tokenModel) async {
-  //     if (tokenModel.apiToken != null) {
-  //       await _myServices.sharedPreferences
-  //           .setString('token', tokenModel.apiToken!);
-  //       await _myServices.sharedPreferences.setString(
-  //         'lastTokenDate',
-  //         DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
-  //       );
-  //       print("تم إنشاء session جديد: ${tokenModel.apiToken}");
-
-  //       /// ✅ إعادة تحميل السلة بعد إنشاء session
-  //       final ControllerCart cartController = Get.find();
-  //       await cartController.getCart();
-  //     }
-  //   });
-  // }
 
   startTime() {
     if (startEndTime == false) {
@@ -184,6 +177,14 @@ class ControllerLogin extends LoginController {
     update(); // تحديث الـ UI
   }
 
+  void openOtpFieldsAndFocus() {
+    showOtp.value = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      f1.requestFocus();
+    });
+  }
+
+  String get otpCode => '${otp1.text}${otp2.text}${otp3.text}${otp4.text}';
   @override
   Future createToken() async {
     statusRequestToken = StatusRequest.loading;
@@ -220,7 +221,6 @@ class ControllerLogin extends LoginController {
     );
   }
 
-  @override
   @override
   checkAndCreateToken() async {
     String? token = _myServices.sharedPreferences.getString('token');
@@ -314,11 +314,48 @@ class ControllerLogin extends LoginController {
 
   @override
   void onInit() {
+    _loginDataSourceImpl =
+        LoginDataSourceImpl(Get.find<Method>()); // ⬅️ Method أكيد متسجل دلوقتي
+
     //createToken();
     checkAndCreateToken();
     getTokenDev();
     // getCustomerByphone(phone: 'phone');
     super.onInit();
+    _autoLoginIfPossible();
+  }
+
+  // ====== Session helpers ======
+  bool get _hasVerifiedSession {
+    final uid = _myServices.sharedPreferences.getString('UserId');
+    final phone = _myServices.sharedPreferences.getString('Phone');
+    final verified =
+        _myServices.sharedPreferences.getBool('is_phone_verified') ?? false;
+    return uid != null && phone != null && verified;
+  }
+
+  Future<void> _persistVerifiedSession({
+    required String customerId,
+    required String phone,
+  }) async {
+    await _myServices.sharedPreferences.setString('UserId', customerId);
+    await _myServices.sharedPreferences.setString('Phone', phone);
+    await _myServices.sharedPreferences.setBool('is_phone_verified', true);
+    await _myServices.sharedPreferences.setString(
+      'lastLoginAt',
+      DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.now()),
+    );
+  }
+
+  Future<void> _autoLoginIfPossible() async {
+    // عند فتح التطبيق: لو سبق تحقق المستخدم والسيشن سليمة → ادخل على طول
+    if (_hasVerifiedSession) {
+      try {
+        final ControllerCart cartController = Get.find();
+        await cartController.getCart(); // اختياري: تحديث السلة
+      } catch (_) {}
+      Get.offAllNamed(NamePages.pBottomBar);
+    }
   }
 
   @override
@@ -414,28 +451,28 @@ class ControllerLogin extends LoginController {
       print(statusRequestsendCodeFuser);
       newHandleStatusRequestInput(statusRequestsendCodeFuser!);
       update();
-    }, (data) {
-      if (data.isNotEmpty && data.containsKey("customer_id")) {
-        _myServices.sharedPreferences
-            .setString('UserId', data["customer_id"].toString());
-        _myServices.sharedPreferences.setString('Phone', cPhoneLogin.text);
-        print(_myServices.sharedPreferences.getString('UserId'));
-        Get.offAllNamed(NamePages.pBottomBar);
-        statusRequestsendCodeFuser = StatusRequest.success;
+    }, (data) async {
+      if (data.isNotEmpty && data.containsKey('customer_id')) {
+        final cid = data['customer_id'].toString();
+        await _persistVerifiedSession(customerId: cid, phone: cPhoneLogin.text);
+
+        statusRequestsendCodeFuser = StatusRequest.success; // ← المهم
         update();
+
+        // ✅ ده لوجين عام → روح للهوم
+        Get.offAllNamed(NamePages.pBottomBar);
       } else {
         newCustomDialog(
-            body: SizedBox(
-              height: 40,
-              child: PrimaryButton(
-                label: 'موافق',
-                onTap: () {
-                  Get.back();
-                },
-              ),
+          body: SizedBox(
+            height: 40,
+            child: PrimaryButton(
+              label: 'موافق',
+              onTap: () => Get.back(),
             ),
-            title: 'حدث خطاء ما الرجاء اعادة المحاولة ',
-            dialogType: DialogType.error);
+          ),
+          title: 'حدث خطاء ما الرجاء اعادة المحاولة ',
+          dialogType: DialogType.error,
+        );
         statusRequestsendCodeFuser = StatusRequest.failure;
         update();
       }
@@ -465,6 +502,7 @@ class ControllerLogin extends LoginController {
           statuesUser = data['typeAuth'];
           startTime();
           statusRequestSPhoneC = StatusRequest.success;
+          openOtpFieldsAndFocus();
           update();
         } else {
           newCustomDialog(
@@ -507,20 +545,34 @@ class ControllerLogin extends LoginController {
       print("errrrrrrrrrrrrrror");
       newHandleStatusRequestInput(statusRequestSendCodeOnCart!);
       update();
-    }, (data) {
+    }, (data) async {
       if (data.isNotEmpty && data.containsKey('customer_id')) {
-        // ✅ تحديث UserId و Phone دائمًا بدون شرط
-        _myServices.sharedPreferences
-            .setString('UserId', data["customer_id"].toString());
-        _myServices.sharedPreferences.setString('Phone', cPhoneOnCart.text);
+        final cid = data['customer_id'].toString();
+
+        await _persistVerifiedSession(
+          customerId: cid,
+          phone: cPhoneOnCart.text,
+        );
+        await _myServices.sharedPreferences
+            .setString('PhoneOnCart', cPhoneOnCart.text);
 
         statusRequestSendCodeOnCart = StatusRequest.success;
 
-        ControllerCart controllerCart = Get.find();
-        controllerCart.plusIndexScreensCart();
+        try {
+          ControllerCart controllerCart = Get.find();
+          controllerCart.plusIndexScreensCart();
+        } catch (_) {}
 
         isSendC = true;
         statusRequestSPhoneC = StatusRequest.empty;
+
+        // اختياري: اخفاء الحقول وتنضيفها
+        showOtp.value = false;
+        otp1.clear();
+        otp2.clear();
+        otp3.clear();
+        otp4.clear();
+
         update();
       } else {
         newCustomDialog(
@@ -556,21 +608,17 @@ class ControllerLogin extends LoginController {
       update();
     }
   }
+
+  @override
+  void onClose() {
+    otp1.dispose();
+    otp2.dispose();
+    otp3.dispose();
+    otp4.dispose();
+    f1.dispose();
+    f2.dispose();
+    f3.dispose();
+    f4.dispose();
+    super.onClose();
+  }
 }
-
-
-
-
-// Future<String> getUserIP() async {
-  
-//   final response = await http.get(Uri.parse('https://api.ipify.org?format=json'));
-//   if (response.statusCode == 200) {
-//     var jsonResponse = jsonDecode(response.body);
-//     print(jsonResponse['ip']);
-//      print(jsonResponse);
-//     return jsonResponse['ip'];
-//   } else {
-//     throw Exception('Failed to load IP address');
-//   }
-//   }
-  //156.207.7.98

@@ -22,9 +22,9 @@ class AddAddress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Get.find<ControllerPayment>().zoneId.isEmpty) {
-      Get.find<ControllerPayment>().getZoneId();
-    }
+    // if (Get.find<ControllerPayment>().zoneId.isEmpty) {
+    //   Get.find<ControllerPayment>().getZoneId();
+    // }
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: GetBuilder<ControllerAddress>(
@@ -119,7 +119,7 @@ class AddAddress extends StatelessWidget {
                         ),
                         CustomFieldPhone(
                           controller: controller.cPhone,
-                          hint: '7878'.tr,
+                          hint: '592090000'.tr,
                           validators: validatePhone,
                         ),
                       ],

@@ -5,9 +5,48 @@ import 'package:nylon/core/theme/colors_app.dart';
 import 'package:nylon/features/cart/presentation/screens/widgets/stepr_widget.dart';
 import 'package:nylon/features/cart/presentation/controller/controller_cart.dart';
 
-class WidgetStepper extends StatelessWidget {
+class WidgetStepper extends StatefulWidget {
   final int currentIndex;
   const WidgetStepper({super.key, required this.currentIndex});
+
+  @override
+  State<WidgetStepper> createState() => _WidgetStepperState();
+}
+
+class _WidgetStepperState extends State<WidgetStepper>
+    with TickerProviderStateMixin {
+  late AnimationController _cartPulseController;
+  late Animation<double> _cartPulseAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _cartPulseController = AnimationController(
+      duration: const Duration(milliseconds: 800),
+      vsync: this,
+    );
+
+    _cartPulseAnimation = Tween<double>(
+      begin: 1.0,
+      end: 1.2,
+    ).animate(CurvedAnimation(
+      parent: _cartPulseController,
+      curve: Curves.elasticOut,
+    ));
+  }
+
+  @override
+  void dispose() {
+    _cartPulseController.dispose();
+    super.dispose();
+  }
+
+  void triggerCartAnimation() {
+    _cartPulseController.forward().then((_) {
+      _cartPulseController.reverse();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,26 +68,61 @@ class WidgetStepper extends StatelessWidget {
             showLoadingAnimation: false,
             showStepBorder: false,
             steps: [
-              easyStepWidget(
-                  index: 0,
-                  currentIndex: currentIndex,
-                  label: '38'.tr,
-                  icon: Icons.shopping_cart),
+              // Cart step with animation
+              EasyStep(
+                customStep: AnimatedBuilder(
+                  animation: _cartPulseAnimation,
+                  builder: (context, child) {
+                    return Transform.scale(
+                      scale: widget.currentIndex == 0
+                          ? _cartPulseAnimation.value
+                          : 1.0,
+                      child: Container(
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: controller.indexScreensCart >= 0
+                              ? AppColors.primaryColor
+                              : Colors.grey.shade400,
+                          boxShadow: controller.indexScreensCart >= 0
+                              ? [
+                                  BoxShadow(
+                                    color:
+                                        AppColors.primaryColor.withOpacity(0.4),
+                                    blurRadius: 8,
+                                    spreadRadius: 2,
+                                  )
+                                ]
+                              : null,
+                        ),
+                        child: Icon(
+                          Icons.shopping_cart,
+                          color: Colors.white,
+                          size: 16,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+                title: '38'.tr,
+              ),
+
+              // باقي الخطوات عادية
               easyStepWidget(
                   index: 1,
-                  currentIndex: currentIndex,
+                  currentIndex: widget.currentIndex,
                   label: '40'.tr,
                   icon: Icons.location_on_outlined),
               easyStepWidget(
                 index: 2,
-                currentIndex: currentIndex,
+                currentIndex: widget.currentIndex,
                 label: '39'.tr,
                 icon: Icons.attach_money,
               ),
-              //   easyStepWidget(index: 3, currentIndex: currentIndex, label:'167'.tr,icon:Icons.local_shipping_outlined,),
               easyStepWidget(
                 index: 3,
-                currentIndex: currentIndex,
+                currentIndex: widget.currentIndex,
                 label: '41'.tr,
                 icon: Icons.check_circle_outline,
               ),
@@ -57,5 +131,12 @@ class WidgetStepper extends StatelessWidget {
         ],
       );
     });
+  }
+}
+
+// إضافة method للتحكم في animation من خارج الكلاس
+extension StepperAnimation on _WidgetStepperState {
+  void animateCart() {
+    triggerCartAnimation();
   }
 }

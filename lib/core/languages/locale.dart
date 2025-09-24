@@ -239,6 +239,19 @@ class MyLocale implements Translations {
           "tracking_pending": "جارٍ تجهيز الشحنة وإرسالها لشركة الشحن",
           "copied": "تم النسخ",
           "order_status": "حالة الطلب",
+          'error': 'خطأ',
+          'error_number': 'من فضلك أدخل الكود المكون من 4 أرقام',
+          'next_step': 'الخطوة التالية',
+          "send_transfer_image":
+              "الرجاء ارسال صوره التحويل \n حتي نتمكن من تنفيذ الطلب",
+          "select_address_payment":
+              "الرجاء اختيار العنوان ووسيلة الدفع \n حتي نتمكن من تنفيذ طلبك",
+          "confirm": "موافق",
+          "balance_added": "تم اضافه الرصيد بنجاح",
+          "save_changes": "حفظ التعديلات",
+          "continue": "متابعة",
+          "phone_verified":
+              "تم التحقق سابقا من رقم هاتفك \n يمكنك الان المتابعة لاتمام الطلب",
         },
         'en': {
           '1': 'Welcome to Nylon Store',
@@ -484,6 +497,19 @@ class MyLocale implements Translations {
               "Your order is being prepared and will be handed to the courier",
           "copied": "Copied",
           "order_status": "Order Status",
+          'error': 'Error',
+          'error_number': 'Please enter the 4-digit code',
+          'next_step': 'Next step',
+          "send_transfer_image":
+              "Please upload the transfer image \n so we can process your order",
+          "select_address_payment":
+              "Please select the address and payment method \n to proceed with your order",
+          "confirm": "Confirm",
+          "balance_added": "Balance has been added successfully",
+          "save_changes": "Save changes",
+          "continue": "Continue",
+          "phone_verified":
+              "Your phone number has already been verified \n You can now continue to complete the order",
         }
       };
 }

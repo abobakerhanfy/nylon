@@ -17,40 +17,56 @@ import 'package:nylon/features/login/presentation/controller/controller_login.da
 // لا تستورد ControllerPayment هنا - سيتم تحميله عند الحاجة فقط
 import 'package:nylon/features/cart/presentation/controller/cart_badge_controller.dart';
 import 'package:nylon/core/bindings/app_bindings.dart';
+import 'package:nylon/core/routes/name_pages.dart';
+import 'package:nylon/core/services/auth_service.dart'; // ✅ جديد
+import 'package:get_storage/get_storage.dart'; // ✅ جديد
+import 'package:flutter/foundation.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  Future<void> initApp() async {
-    // 1) تأكد من وجود token للضيف
-    await ControllerLogin().checkAndCreateToken(); // أو طريقتك الحالية
-
-    // 2) حقن الخدمات لو لسه
-    if (!Get.isRegistered<MyServices>()) {
-      Get.put(MyServices());
-    }
-
-    // 3) حقن الكنترولر وتحديث العداد
-    if (!Get.isRegistered<CartBadgeController>()) {
-      Get.put(CartBadgeController());
-    }
-    await Get.find<CartBadgeController>().refresh();
-  }
-
   try {
-    // تحسين إعدادات النظام
+    // 1) نظام + Firebase
     await _setupSystemConfiguration();
-
-    // تهيئة Firebase
     await _initializeFirebase();
 
-    // تهيئة الخدمات الأساسية
+    // 2) MyServices (SharedPreferences) - ده الأهم يكون الأول
     await _initializeServices();
 
-    // تسجيل Controllers الأساسية فقط
+    // 3) GetStorage (auth)
+    await GetStorage.init('auth');
+
+    // 4) سجّل Method أولاً
+    if (!Get.isRegistered<Method>()) {
+      Get.put(Method(), permanent: true);
+    }
+
+    // 5) بقية الـ DataSources
+    if (!Get.isRegistered<OrdersDataSourceImpl>()) {
+      Get.put(OrdersDataSourceImpl(Get.find<Method>()), permanent: true);
+    }
+
+    // 6) الكنترولرز - بعد MyServices
+    if (!Get.isRegistered<ControllerLogin>()) {
+      Get.put(ControllerLogin(), permanent: true); // ← دلوقتي MyServices موجود
+    }
+
+    if (!Get.isRegistered<ControllerCart>()) {
+      Get.put(ControllerCart(), permanent: true);
+    }
+
+    // 7) AuthService (اختياري)
+    if (!Get.isRegistered<AuthService>()) {
+      await Get.putAsync<AuthService>(() async => await AuthService().init(),
+          permanent: true);
+    }
+    if (kReleaseMode) {
+      debugPrint = (String? message, {int? wrapWidth}) {};
+    }
+    // 8) تسجيل Controllers الأساسية
     await _registerCoreControllers();
 
-    // بدء التطبيق
+    // 9) أخيراً شغّل التطبيق مرة واحدة بس
     runApp(MyApp());
   } catch (e) {
     debugPrint('❌ خطأ في تهيئة التطبيق: $e');
@@ -95,8 +111,8 @@ Future<void> _registerCoreControllers() async {
     Get.put(Method(), permanent: true);
 
     // Controller تسجيل الدخول (مطلوب للتوكن)
-    final loginController = Get.put(ControllerLogin());
-    await loginController.createToken();
+    final loginController = Get.put(ControllerLogin(), permanent: true);
+
     if (!Get.isRegistered<CartBadgeController>()) {
       Get.put(CartBadgeController(), permanent: true);
     }
@@ -169,6 +185,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      initialRoute: NamePages.pSplashGate,
+
       routingCallback: (routing) {
         if (routing == null) return;
         debugPrint(

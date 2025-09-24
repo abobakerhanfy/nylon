@@ -68,6 +68,27 @@ class ControllerAddress extends AdreessController {
       }, (data) {
         if (data.isNotEmpty && data.containsKey("success")) {
           statusRequestOnTap = StatusRequest.success;
+
+          // إضافة العنوان الجديد للقائمة محلياً
+          if (addressModel?.data?.address != null) {
+            Address newAddress = Address(
+              addressId: DateTime.now().millisecondsSinceEpoch.toString(),
+              customerId: _myServices.sharedPreferences.getString('UserId'),
+              firstname: cFirstName.text,
+              lastname: cLastName.text.isNotEmpty ? cLastName.text : "null",
+              company: cCompany.text,
+              address1: cAddress.text,
+              city: cCitys.text,
+              countryId: cCountryId.text,
+              zoneId: cZoneId.text,
+            );
+            addressModel!.data!.address!.insert(0, newAddress);
+          }
+
+          // مسح الحقول بعد الإضافة الناجحة
+          // _clearFields();
+
+          update();
         } else {
           statusRequestOnTap = StatusRequest.failure;
           update();
@@ -75,6 +96,17 @@ class ControllerAddress extends AdreessController {
         }
       });
     }
+  }
+
+// دالة مساعدة لمسح الحقول
+  void _clearFields() {
+    cFirstName.clear();
+    cLastName.clear();
+    cAddress.clear();
+    cCitys.clear();
+    cCountryId.clear();
+    cZoneId.clear();
+    cCompany.clear();
   }
 
   @override
@@ -125,8 +157,11 @@ class ControllerAddress extends AdreessController {
         await addNewCustomer();
         print('add Adress Customer notLogin=============================');
       }
+
+      // تحديث العناوين بعد الإضافة
+      await getAddress();
+
       Get.back();
-      await _controllerLogin.getCustomerBypId();
       update();
     }
   }

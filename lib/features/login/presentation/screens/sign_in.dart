@@ -59,7 +59,7 @@ class SignIn extends StatelessWidget {
                               CustomFieldPhone(
                                 validators: (value) => null,
                                 controller: controller.cPhoneLogin,
-                                hint: '59209',
+                                hint: '592090000',
                               ),
                               SizedBox(
                                 height: boxSize.maxHeight * 0.03,

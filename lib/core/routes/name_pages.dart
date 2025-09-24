@@ -27,6 +27,7 @@ class NamePages {
   static const String pSendOrderBalance = '/SendOrderBalance';
   static const String pOrderConfirmation = "/order-confirmation";
   static const String pPaymentWebViewScreen = "/paymentWebView";
+  static const String pSplashGate = '/__splash_gate';
 
 //OnBoarding
 }
