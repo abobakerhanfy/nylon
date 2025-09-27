@@ -6,7 +6,7 @@ class QuantityControlWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-   return Row(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Container(
@@ -16,11 +16,13 @@ class QuantityControlWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
             color: AppColors.primaryColor,
           ),
-          child: const Icon(Icons.add, color: Colors.white),
+          child:
+              Icon(Icons.add, color: Theme.of(context).scaffoldBackgroundColor),
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 10),
-          child: Text('02', style: TextStyle(fontSize: 16, color: Colors.black)),
+          child:
+              Text('02', style: TextStyle(fontSize: 16, color: Colors.black)),
         ),
         Container(
           alignment: Alignment.center,
@@ -30,7 +32,8 @@ class QuantityControlWidget extends StatelessWidget {
             borderRadius: BorderRadius.circular(100),
             color: AppColors.grayO,
           ),
-          child: const Text('-', style: TextStyle(fontSize: 20, color: Colors.black38)),
+          child: const Text('-',
+              style: TextStyle(fontSize: 20, color: Colors.black38)),
         ),
       ],
     );

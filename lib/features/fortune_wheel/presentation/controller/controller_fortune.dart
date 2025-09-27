@@ -143,11 +143,11 @@ class ControllerFortune extends FortuneController {
       barrierDismissible: false,
       builder: (context) {
         return Dialog(
-          backgroundColor: AppColors.background,
+          backgroundColor: fullAppBackgroundColor,
           shape: const RoundedRectangleBorder(borderRadius: BorderRadius.zero),
           insetPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
           child: Container(
-            color: Colors.white,
+            color: Get.theme.scaffoldBackgroundColor,
             width: MediaQuery.of(context).size.width * 0.90,
             padding: const EdgeInsets.symmetric(vertical: 8),
             child: SingleChildScrollView(

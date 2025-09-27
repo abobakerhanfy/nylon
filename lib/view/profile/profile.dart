@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:nylon/controller/home/controller_home_widget.dart';
 import 'package:nylon/core/services/services.dart';
+import 'package:nylon/core/theme/colors_app.dart';
 import 'package:nylon/core/widgets/Profile/widgets.dart';
 import 'package:nylon/features/cart/presentation/screens/widgets/button_on_cart.dart';
 import 'package:nylon/features/login/presentation/controller/controller_login.dart';
@@ -15,6 +16,7 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:nylon/core/widgets/login/dialog.dart';
 import 'package:nylon/core/widgets/primary_button.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:get/get.dart';
 
 class Profile extends StatelessWidget {
   Profile({super.key});
@@ -28,8 +30,9 @@ class Profile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('TXT = ${Theme.of(context).textTheme.bodyMedium?.color}');
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBar(
           label: '20'.tr,
           isBack: false,
@@ -102,19 +105,6 @@ class Profile extends StatelessWidget {
                       ContainerProfileImage(
                           onTap: () {
                             Get.toNamed(NamePages.pMyCoupons);
-                            //   Get.toNamed(NamePages.pFortuneWheel);
-                            //  showDialog(
-                            //      context: context,
-                            //      builder:(context){
-                            //        return  AlertDialog(
-
-                            //          backgroundColor:Colors.white,
-                            //          title:   SizedBox(
-                            //            width: MediaQuery.of(context).size.width,
-                            //            child:  const FortuneWheelPage(),
-                            //          ),
-                            //        );
-                            //      });
                           },
                           svg: 'images/test17.svg',
                           label: '29'.tr,
@@ -356,8 +346,7 @@ class InformationAppOnProfile extends StatelessWidget {
               child: Text(
                 '69'.tr, // سياسة الارجاع
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      decoration: TextDecoration.underline, // يبان كـ رابط
-                      color: Colors.blue,
+                      color: Colors.black,
                     ),
               ),
             ),
@@ -369,8 +358,7 @@ class InformationAppOnProfile extends StatelessWidget {
               child: Text(
                 '70'.tr, // سياسة الخصوصية
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      decoration: TextDecoration.underline,
-                      color: Colors.blue,
+                      color: Colors.black,
                     ),
               ),
             ),
@@ -382,8 +370,7 @@ class InformationAppOnProfile extends StatelessWidget {
               child: Text(
                 '71'.tr, // اتفاقية المستخدم
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      decoration: TextDecoration.underline,
-                      color: Colors.blue,
+                      color: Colors.black,
                     ),
               ),
             ),
@@ -461,20 +448,9 @@ class RowSocialMediaApp extends StatelessWidget {
         const SizedBox(width: 8),
         InkWell(
           onTap: () => _launchUrl("https://x.com/sa_nylon_?lang=ar"),
-          child: Container(
-            width: 24, // نفس مقاس باقي الأيقونات
-            height: 24,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.white, // خلفية بيضا عشان الصورة لو مش دائرية
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(3), // تصغير الصورة جوا الدائرة
-              child: Image.asset(
-                'images/twitter.png',
-                fit: BoxFit.contain,
-              ),
-            ),
+          child: const CircleAvatar(
+            radius: 12,
+            backgroundImage: AssetImage('images/twitter.png'),
           ),
         ),
         const SizedBox(width: 8),
@@ -529,7 +505,8 @@ class RowSocialMediaApp extends StatelessWidget {
                                 builder:(context){
                                   return  AlertDialog(
 
-                                    backgroundColor:Colors.white,
+                                    backgroundColor:fullAppBackgroundColor
+,
                                     title:   SizedBox(
                                       width: MediaQuery.of(context).size.width,
                                       child:  const FortuneWheelPage(),
@@ -560,7 +537,8 @@ class RowSocialMediaApp extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text('24'.tr,style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: Colors.white
+                              color: fullAppBackgroundColor
+
                             )),
                           ),
                           //PrimaryButton(onTap: (){}, label:'24'.tr,)

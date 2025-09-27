@@ -20,7 +20,7 @@ class ContainerMyAddresses extends StatelessWidget {
       alignment: Alignment.center,
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Get.theme.scaffoldBackgroundColor,
         boxShadow: [
           BoxShadow(
             color: AppColors.background,

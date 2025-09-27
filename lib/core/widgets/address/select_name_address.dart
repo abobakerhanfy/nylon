@@ -36,7 +36,7 @@ class SelectNameAddressContainer extends StatelessWidget {
                 label,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: controller.cCompany.text == label
-                        ? Colors.white
+                        ? Theme.of(context).scaffoldBackgroundColor
                         : Colors.black,
                     fontSize: 15,
                     fontWeight: FontWeight.normal),

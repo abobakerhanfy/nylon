@@ -19,7 +19,8 @@
 //       children: [
 //         Container(
 //           decoration: BoxDecoration(
-//               color: Colors.white,
+//               color: Theme.of(context).scaffoldBackgroundColor
+,
 //               borderRadius: BorderRadius.circular(15)
 //           ),
 //           child: LayoutBuilder(

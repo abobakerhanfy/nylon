@@ -39,7 +39,7 @@ class _OrderSuccessfullyState extends State<OrderSuccessfully> {
     final double screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       body: Container(
         color: AppColors.background,
         padding: const EdgeInsets.symmetric(horizontal: 8),
@@ -72,11 +72,8 @@ class _OrderSuccessfullyState extends State<OrderSuccessfully> {
                     child: CircleAvatar(
                       radius: screenHeight * 0.10,
                       backgroundColor: AppColors.primaryColor,
-                      child: const Icon(
-                        Icons.check,
-                        size: 75,
-                        color: Colors.white,
-                      ),
+                      child: Icon(Icons.check,
+                          size: 75, color: Get.theme.scaffoldBackgroundColor),
                     ),
                   ),
                 ],

@@ -14,7 +14,7 @@ class Favorite extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '146'.tr),
       body: GetBuilder<ControllerFavorites>(builder: (controller) {
         return controller.statusRequestGetFav == StatusRequest.empty

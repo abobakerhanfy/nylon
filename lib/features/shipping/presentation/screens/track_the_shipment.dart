@@ -103,7 +103,7 @@ class TrackTheShipmentDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: ' ${'115'.tr}'),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -388,16 +388,15 @@ class TrackTheShipmentDetails extends StatelessWidget {
                   padding: const EdgeInsets.all(20),
                   width: MediaQuery.of(context).size.width * 0.90,
                   decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.background,
-                        spreadRadius: 0.5,
-                        blurRadius: 7,
-                      ),
-                    ],
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                  ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.background,
+                          spreadRadius: 0.5,
+                          blurRadius: 7,
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(12),
+                      color: Get.theme.scaffoldBackgroundColor),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

@@ -38,7 +38,7 @@ class _ReplacementAndReturnState extends State<ReplacementAndReturn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '120'.tr),
       body: Container(
         height: MediaQuery.of(context).size.height,
@@ -76,11 +76,10 @@ class _ReplacementAndReturnState extends State<ReplacementAndReturn> {
                                   const EdgeInsets.symmetric(horizontal: 16),
                               padding: const EdgeInsets.all(16),
                               decoration: BoxDecoration(
-                                border: Border.all(
-                                    color: AppColors.borderBlack28, width: 1),
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.white,
-                              ),
+                                  border: Border.all(
+                                      color: AppColors.borderBlack28, width: 1),
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Get.theme.scaffoldBackgroundColor),
                               child: Column(
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceEvenly,
@@ -158,9 +157,10 @@ class _ReplacementAndReturnState extends State<ReplacementAndReturn> {
                                                         .data![i]
                                                         .returnStatusCode! ??
                                                     '',
-                                                style: const TextStyle(
+                                                style: TextStyle(
                                                     fontSize: 11,
-                                                    color: Colors.white),
+                                                    color: Theme.of(context)
+                                                        .scaffoldBackgroundColor),
                                               ),
                                             )
                                         ],

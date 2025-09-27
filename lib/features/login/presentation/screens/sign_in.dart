@@ -15,7 +15,7 @@ class SignIn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.background,
+        backgroundColor: fullAppBackgroundColor,
         body: SafeArea(
           child: Container(
             padding: const EdgeInsets.all(20),

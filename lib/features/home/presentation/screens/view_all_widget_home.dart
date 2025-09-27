@@ -219,7 +219,7 @@ class _HomeViewAllWidgetState extends State<HomeViewAllWidget> {
 //   Widget build(BuildContext context) {
 //     return Scaffold(
 //       resizeToAvoidBottomInset:false,
-//       backgroundColor: AppColors.background,
+//       backgroundColor: fullAppBackgroundColor,
 //       appBar: customAppBarTow(title: '67'.tr),
 //             body: SizedBox(
 //         width: MediaQuery.of(context).size.width,
@@ -245,8 +245,7 @@ class _HomeViewAllWidgetState extends State<HomeViewAllWidget> {
 //                               context: context,
 //                               builder: (context) {
 //                                 return AlertDialog(
-//                                   backgroundColor: Colors.white,
-//                                   title: SizedBox(
+//                                   backgroundcolor: Get.theme.scaffoldBackgroundColor,//                                   title: SizedBox(
 //                                     width: MediaQuery.of(context).size.width,
 //                                     child: const FortuneWheelPage(),
 //                                   ),

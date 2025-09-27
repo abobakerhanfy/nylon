@@ -69,7 +69,7 @@ class ProductsContainerHome extends StatelessWidget {
             child: Container(
               margin: const EdgeInsets.symmetric(horizontal: 6),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: Get.theme.scaffoldBackgroundColor,
                   border:
                       Border.all(color: AppColors.borderBlack28, width: 0.05),
                   borderRadius: BorderRadius.circular(15)),
@@ -107,10 +107,11 @@ class ProductsContainerHome extends StatelessWidget {
                                       color: const Color(0xffff6f61),
                                       borderRadius: BorderRadius.circular(10),
                                     ),
-                                    child: const Text(
+                                    child: Text(
                                       'عرض',
                                       style: TextStyle(
-                                        color: Colors.white,
+                                        color: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -138,7 +139,7 @@ class ProductsContainerHome extends StatelessWidget {
                       flex: 1,
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8),
-                        color: Colors.white,
+                        color: Get.theme.scaffoldBackgroundColor,
                         child: Stack(
                           alignment:
                               _myServices.sharedPreferences.getString('Lang') ==
@@ -331,7 +332,7 @@ class DiscountWidgetOnContainer extends StatelessWidget {
         child: Text(
           '$discount%',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white,
+                color: Get.theme.scaffoldBackgroundColor,
                 fontSize: 12,
               ),
         ));

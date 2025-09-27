@@ -53,7 +53,7 @@ class ControllerNotifications extends NotificationsController {
               ),
             ],
           ),
-          backgroundColor: Colors.white,
+          backgroundColor: Get.theme.scaffoldBackgroundColor,
           messageText: Column(
             children: [
               Text(

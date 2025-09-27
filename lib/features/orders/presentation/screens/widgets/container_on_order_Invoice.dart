@@ -11,7 +11,7 @@ class ContaineronOrderInvoice extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: Get.theme.scaffoldBackgroundColor,
       child: Column(
         children: [
           Row(
@@ -34,7 +34,7 @@ class ContaineronOrderInvoice extends StatelessWidget {
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       fontSize: 10,
                       fontWeight: FontWeight.w600,
-                      color: Colors.white),
+                      color: Theme.of(context).scaffoldBackgroundColor),
                 ),
               ),
             ],

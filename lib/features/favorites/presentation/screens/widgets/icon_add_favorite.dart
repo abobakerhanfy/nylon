@@ -28,7 +28,7 @@ class FavoriteIcon extends StatelessWidget {
                       backgroundColor:
                           controller.favoritesMap.containsKey(idProduct)
                               ? Colors.red[700]
-                              : Colors.white),
+                              : Theme.of(context).scaffoldBackgroundColor),
                 ),
                 Icon(Icons.favorite,
                     color: controller.favoritesMap.containsKey(idProduct)

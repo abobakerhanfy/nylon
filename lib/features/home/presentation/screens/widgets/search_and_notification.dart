@@ -18,7 +18,8 @@
 //                 context: context,
 //                 builder: (context) {
 //                   return AlertDialog(
-//                     backgroundColor: Colors.white,
+//                     backgroundColor: Theme.of(context).scaffoldBackgroundColor
+,
 //                     title: SizedBox(
 //                       width: MediaQuery.of(context).size.width,
 //                       child: const FortuneWheelPage(),

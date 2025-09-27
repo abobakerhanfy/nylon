@@ -1,7 +1,7 @@
 name: nylon
 description: "A new Flutter project."
 publish_to: 'none'
-version: 1.4.0+20
+version: 1.4.1+21
 
 environment:
   sdk: ">=3.0.0 <4.0.0"
@@ -70,6 +70,7 @@ flutter:
     - images/xpayment1.png
     - images/tabby_installments.png
     - images/cod.png
+    - images/twitter.png
     - images/tamara-logo-badge-ar.svg
 
   fonts:

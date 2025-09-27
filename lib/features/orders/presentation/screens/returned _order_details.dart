@@ -26,10 +26,10 @@ class ViewDetailsOrderReturned extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-        color: Colors.white,
+        color: Get.theme.scaffoldBackgroundColor,
         margin: const EdgeInsets.all(10),
         child: BottomOnOrder(
             title: '122'.tr,
@@ -432,7 +432,8 @@ class ViewDetailsOrderReturned extends StatelessWidget {
                                       // عرض صورة المستخدم
                                       CircleAvatar(
                                           radius: 20,
-                                          backgroundColor: Colors.white,
+                                          backgroundColor: Theme.of(context)
+                                              .scaffoldBackgroundColor,
                                           child: Image.asset(
                                             StaticAppImages.imageLogo,
                                             fit: BoxFit.fill,

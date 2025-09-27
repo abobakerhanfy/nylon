@@ -28,10 +28,8 @@ class ButtonOnCart extends StatelessWidget {
               borderRadius: BorderRadius.circular(20)),
           child: Center(
             child: Text(label,
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: Colors.white)),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).scaffoldBackgroundColor)),
           ),
         ),
       ),

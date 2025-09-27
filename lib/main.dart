@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:nylon/core/theme/colors_app.dart';
 import 'firebase_options.dart';
 import 'package:nylon/core/function/method_GPUD.dart';
 import 'package:nylon/core/languages/controllerLocale.dart';
@@ -21,6 +22,7 @@ import 'package:nylon/core/routes/name_pages.dart';
 import 'package:nylon/core/services/auth_service.dart'; // ✅ جديد
 import 'package:get_storage/get_storage.dart'; // ✅ جديد
 import 'package:flutter/foundation.dart';
+import 'package:nylon/core/theme/app_theme_controller.dart'; // ⬅️
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,8 +67,10 @@ void main() async {
     }
     // 8) تسجيل Controllers الأساسية
     await _registerCoreControllers();
-
     // 9) أخيراً شغّل التطبيق مرة واحدة بس
+    if (!Get.isRegistered<AppThemeController>()) {
+      Get.put(AppThemeController(), permanent: true);
+    }
     runApp(MyApp());
   } catch (e) {
     debugPrint('❌ خطأ في تهيئة التطبيق: $e');
@@ -178,40 +182,43 @@ Future<void> _initializeDailyFortune() async {
 class MyApp extends StatelessWidget {
   MyApp({super.key});
 
-  // استخدام lazy loading للـ locale controller
   final ControllerLocal controllerLocal =
       Get.put(ControllerLocal(), permanent: true);
 
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      initialRoute: NamePages.pSplashGate,
+    // لفّ GetMaterialApp بـ GetBuilder علشان يسمع لأي تحديث في ألوان الـ API
+    return GetBuilder<AppThemeController>(
+      init:
+          Get.isRegistered<AppThemeController>() ? null : AppThemeController(),
+      builder: (themeCtrl) {
+        final baseTheme = controllerLocal.abbThem; // الثيم الأساسي (AR/EN)
+        final themed = themeCtrl.applyTo(baseTheme); // حقن ألوان الخلفية + النص
 
-      routingCallback: (routing) {
-        if (routing == null) return;
-        debugPrint(
-            '🚦 ROUTE: ${routing.previous} -> ${routing.current}, args=${routing.args}');
+        return GetMaterialApp(
+          initialRoute: NamePages.pSplashGate,
+          routingCallback: (routing) {
+            if (routing == null) return;
+            debugPrint(
+                '🚦 ROUTE: ${routing.previous} -> ${routing.current}, args=${routing.args}');
+          },
+          debugShowCheckedModeBanner: false,
+          title: 'Nylon',
+          translations: MyLocale(),
+          locale: controllerLocal.languages,
+          theme: themed, // ← استخدم الثيم المعدَّل
+          getPages: routes,
+          initialBinding: AppBindings(), // ⬅️ ده اللي بيضمن التسجيل قبل البناء
+
+          unknownRoute: GetPage(
+            name: '/notfound',
+            page: () => const NotFoundPage(),
+          ),
+          defaultTransition: Transition.native,
+          transitionDuration: const Duration(milliseconds: 300),
+          smartManagement: SmartManagement.keepFactory,
+        );
       },
-      debugShowCheckedModeBanner: false,
-      title: 'Nylon',
-      translations: MyLocale(),
-      locale: controllerLocal.languages,
-      theme: controllerLocal.abbThem,
-      getPages: routes,
-      initialBinding: AppBindings(), // ✅
-
-      // إضافة معالجة الأخطاء العامة
-      unknownRoute: GetPage(
-        name: '/notfound',
-        page: () => const NotFoundPage(),
-      ),
-
-      // تحسين الأداء
-      defaultTransition: Transition.native,
-      transitionDuration: const Duration(milliseconds: 300),
-
-      // تحسين إدارة الذاكرة
-      smartManagement: SmartManagement.keepFactory,
     );
   }
 }

@@ -33,7 +33,7 @@ class CartIcon extends StatelessWidget {
           SvgPicture.asset('images/addcart.svg',
               width: 16,
               color: controller.cartMap.containsKey(idProduct)
-                  ? Colors.white
+                  ? Theme.of(context).scaffoldBackgroundColor
                   : Colors.black26),
         ]),
       );

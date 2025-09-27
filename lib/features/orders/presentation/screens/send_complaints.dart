@@ -15,7 +15,7 @@ class SendComplaints extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '113'.tr),
       body: Padding(
         padding: const EdgeInsets.all(20.0),

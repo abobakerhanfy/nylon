@@ -16,7 +16,7 @@ class AddressShippingDetailsOrder extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.white,
+      color: Get.theme.scaffoldBackgroundColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,7 +60,7 @@ class AddressShippingDetailsOrder extends StatelessWidget {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Get.theme.scaffoldBackgroundColor,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(
                             color: AppColors.primaryColor, width: 0.5)),

@@ -15,8 +15,10 @@ class ViewBalance extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('BG = ${Theme.of(context).scaffoldBackgroundColor}');
+    debugPrint('TXT = ${Theme.of(context).textTheme.bodyMedium?.color}');
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '123'.tr),
       body: GetBuilder<ControllerBalance>(builder: (controller) {
         return Center(
@@ -63,7 +65,8 @@ class ViewBalance extends StatelessWidget {
                                 color: AppColors.borderBlack28, width: 1),
                           ),
                           child: FildSendComplaints(
-                              backGroundColor: Colors.white,
+                              backGroundColor:
+                                  Get.theme.scaffoldBackgroundColor,
                               hint: '129'.tr,
                               enabled: true,
                               maxLines: 6,
@@ -127,7 +130,7 @@ class WidgetViewBalanceUseer extends StatelessWidget {
             Text(
               '124'.tr,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Colors.white,
+                  color: Get.theme.scaffoldBackgroundColor,
                   fontSize: 14,
                   fontWeight: FontWeight.normal),
             ),
@@ -138,7 +141,7 @@ class WidgetViewBalanceUseer extends StatelessWidget {
                 Text(
                   '$balance',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
+                        color: Get.theme.scaffoldBackgroundColor,
                         fontSize: 30,
                         fontWeight: FontWeight.normal,
                       ),
@@ -190,10 +193,9 @@ class WidgetSelectBalance extends StatelessWidget {
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(15),
                 child: TextFormField(
-                  style: Theme.of(context)
-                      .textTheme
-                      .bodySmall
-                      ?.copyWith(fontSize: 18, color: Colors.white),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      fontSize: 18,
+                      color: Theme.of(context).scaffoldBackgroundColor),
                   textAlign: TextAlign.start,
                   decoration: InputDecoration(
                     fillColor: AppColors.primaryColor,
@@ -202,7 +204,7 @@ class WidgetSelectBalance extends StatelessWidget {
                         ? '${controller.credit} ${'126'.tr}'
                         : '',
                     hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Colors.white,
+                        color: Get.theme.scaffoldBackgroundColor,
                         fontSize: 16,
                         fontWeight: FontWeight.w600),
                     border: InputBorder.none,
@@ -247,18 +249,17 @@ class WidgetSelectBalance extends StatelessWidget {
                       horizontal: 16,
                     ),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border:
-                          Border.all(color: AppColors.borderBlack28, width: 1),
-                      color: controller.credit == balanceList[i]
-                          ? AppColors.primaryColor
-                          : Colors.white,
-                    ),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                            color: AppColors.borderBlack28, width: 1),
+                        color: controller.credit == balanceList[i]
+                            ? AppColors.primaryColor
+                            : Get.theme.scaffoldBackgroundColor),
                     child: Text(
                       balanceList[i],
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: controller.credit == balanceList[i]
-                              ? Colors.white
+                              ? Theme.of(context).scaffoldBackgroundColor
                               : Colors.grey[500],
                           fontSize: 16,
                           fontWeight: FontWeight.w500),

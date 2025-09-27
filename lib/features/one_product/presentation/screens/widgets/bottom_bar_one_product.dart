@@ -33,7 +33,7 @@ class _BottomNavigationBarOneProductState
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 6),
       height: MediaQuery.of(context).size.height * 0.15,
-      color: Colors.white,
+      color: Get.theme.scaffoldBackgroundColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
@@ -106,7 +106,8 @@ class _BottomNavigationBarOneProductState
                         borderRadius: BorderRadius.circular(100),
                         color: AppColors.primaryColor,
                       ),
-                      child: const Icon(Icons.add, color: Colors.white),
+                      child: Icon(Icons.add,
+                          color: Theme.of(context).scaffoldBackgroundColor),
                     ),
                   ),
                   Padding(
@@ -189,13 +190,10 @@ class _BottomNavigationBarOneProductState
                       );
                     } catch (e) {
                       print('Error adding to cart: $e');
-                      Get.snackbar(
-                        'خطأ',
-                        'حدث خطأ أثناء إضافة المنتج للسلة',
-                        snackPosition: SnackPosition.BOTTOM,
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                      );
+                      Get.snackbar('خطأ', 'حدث خطأ أثناء إضافة المنتج للسلة',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.red,
+                          colorText: Get.theme.scaffoldBackgroundColor);
                     }
                   } else {
                     print('Product data not available');
@@ -211,7 +209,8 @@ class _BottomNavigationBarOneProductState
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SvgPicture.asset('images/cart.svg', color: Colors.white),
+                      SvgPicture.asset('images/cart.svg',
+                          color: Theme.of(context).scaffoldBackgroundColor),
                       const SizedBox(width: 8),
                       Text(
                         // تحقق آمن من وجود البيانات
@@ -221,7 +220,7 @@ class _BottomNavigationBarOneProductState
                             ? '150'.tr
                             : '62'.tr,
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
+                              color: Get.theme.scaffoldBackgroundColor,
                               fontWeight: FontWeight.normal,
                             ),
                       ),

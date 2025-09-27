@@ -82,7 +82,8 @@ class _ProductImageSectionWidgetState extends State<ProductImageSectionWidget> {
                     //   init: ControllerFavorites(),
                     //   builder: (_controller) {
                     //     return _buildImageActionButton('images/fov.svg',
-                    //     _controller.favoritesMap.containsKey(_)?Colors.red: Colors.white
+                    //     _controller.favoritesMap.containsKey(_)?Colors.red: Theme.of(context).scaffoldBackgroundColor
+
                     //      );
                     //   }
                     // ),

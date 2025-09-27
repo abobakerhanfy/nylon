@@ -46,7 +46,7 @@ class _ViewcCategoriesState extends State<ViewcCategories> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '67'.tr),
       body: GetBuilder<ControllerCategory>(
         builder: (controller) {
@@ -91,7 +91,7 @@ class _ViewcCategoriesState extends State<ViewcCategories> {
                   // قائمة التصنيفات
                   Container(
                     width: 107,
-                    color: Colors.white,
+                    color: Get.theme.scaffoldBackgroundColor,
                     child: ListView.separated(
                       separatorBuilder: (context, i) => Divider(
                         height: 0.5,
@@ -109,7 +109,7 @@ class _ViewcCategoriesState extends State<ViewcCategories> {
                             height: 54,
                             color: isSelected
                                 ? AppColors.primaryColor
-                                : Colors.white,
+                                : Get.theme.scaffoldBackgroundColor,
                             padding: const EdgeInsets.symmetric(horizontal: 6),
                             child: Text(
                               translate(cat.nameAr ?? 'notName',
@@ -120,7 +120,8 @@ class _ViewcCategoriesState extends State<ViewcCategories> {
                                   .bodySmall
                                   ?.copyWith(
                                     color: isSelected
-                                        ? Colors.white
+                                        ? Theme.of(context)
+                                            .scaffoldBackgroundColor
                                         : Colors.black,
                                     fontSize: 10,
                                     fontWeight: FontWeight.normal,

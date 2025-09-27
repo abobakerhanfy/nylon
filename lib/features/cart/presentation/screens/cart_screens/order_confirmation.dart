@@ -24,7 +24,7 @@ class OrderConfirmation extends StatelessWidget {
     print("📄 OrderConfirmationNew build executed ✅");
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       body: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         child: LayoutBuilder(

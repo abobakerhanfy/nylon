@@ -115,9 +115,13 @@ class _FortuneWheel extends State<FortuneWheelPage> {
                                       .textTheme
                                       .bodySmall
                                       ?.copyWith(
-                                          color: Colors.white, fontSize: 14)),
-                              const Icon(Icons.close,
-                                  size: 19, color: Colors.white),
+                                          color: Theme.of(context)
+                                              .scaffoldBackgroundColor,
+                                          fontSize: 14)),
+                              Icon(Icons.close,
+                                  size: 19,
+                                  color: Theme.of(context)
+                                      .scaffoldBackgroundColor),
                             ],
                           ),
                         ),
@@ -188,7 +192,10 @@ class _FortuneWheel extends State<FortuneWheelPage> {
                               style: Theme.of(context)
                                   .textTheme
                                   .bodySmall
-                                  ?.copyWith(color: Colors.white, fontSize: 17),
+                                  ?.copyWith(
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
+                                      fontSize: 17),
                             ),
                           );
                         },

@@ -47,7 +47,10 @@ class _ContainerProductCartState extends State<ContainerProductCart> {
         alignment: Get.locale?.languageCode == 'ar'
             ? Alignment.centerLeft
             : Alignment.centerRight,
-        child: const Icon(Icons.delete, color: Colors.white), // أيقونة الحذف
+
+        child: Icon(Icons.delete,
+            size: 30, color: Get.theme.scaffoldBackgroundColor),
+        // أيقونة الحذف
       ),
       direction: DismissDirection.endToStart, // تحديد اتجاه السحب
       onDismissed: (direction) {
@@ -66,7 +69,7 @@ class _ContainerProductCartState extends State<ContainerProductCart> {
             color: (widget.products.name?.contains('***') == true ||
                     widget.products.stock == false)
                 ? const Color.fromRGBO(255, 0, 0, 0.5) // أحمر شفاف
-                : Colors.white,
+                : Get.theme.scaffoldBackgroundColor,
             borderRadius: BorderRadius.circular(8), // اختيارية لتحسين الشكل
           ),
           child: LayoutBuilder(builder: (context, boxSize) {
@@ -161,9 +164,9 @@ class _ContainerProductCartState extends State<ContainerProductCart> {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(100),
                                     color: AppColors.primaryColor),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.add,
-                                  color: Colors.white,
+                                  color: Get.theme.scaffoldBackgroundColor,
                                   size: 20,
                                 ),
                               ),
@@ -198,10 +201,12 @@ class _ContainerProductCartState extends State<ContainerProductCart> {
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(100),
                                     color: AppColors.primaryColor),
-                                child: const Text(
+                                child: Text(
                                   '-',
                                   style: TextStyle(
-                                      fontSize: 18, color: Colors.white),
+                                      fontSize: 18,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor),
                                 ),
                               ),
                             )

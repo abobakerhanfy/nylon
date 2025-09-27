@@ -35,15 +35,17 @@ class _ScreenCartState extends State<ScreenCart> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('BG = ${Theme.of(context).scaffoldBackgroundColor}');
+    debugPrint('TXT = ${Theme.of(context).textTheme.bodyMedium?.color}');
     return GetBuilder<ControllerCart>(
       builder: (controller) {
         return Scaffold(
           resizeToAvoidBottomInset: true,
-          backgroundColor: Colors.white,
+          backgroundColor: fullAppBackgroundColor,
           appBar: AppBar(
-            backgroundColor: Colors.white,
-            shadowColor: Colors.white,
-            surfaceTintColor: Colors.white,
+            backgroundColor: fullAppBackgroundColor,
+            shadowColor: fullAppBackgroundColor,
+            surfaceTintColor: fullAppBackgroundColor,
             elevation: 2,
             leading: controller.indexScreensCart != 0
                 ? Padding(
@@ -60,10 +62,8 @@ class _ScreenCartState extends State<ScreenCart> {
                       child: CircleAvatar(
                         radius: MediaQuery.of(context).size.width * 0.03,
                         backgroundColor: Colors.black,
-                        child: const Icon(
-                          Icons.arrow_back,
-                          color: Colors.white,
-                        ),
+                        child: Icon(Icons.arrow_back,
+                            size: 30, color: Get.theme.scaffoldBackgroundColor),
                       ),
                     ),
                   )

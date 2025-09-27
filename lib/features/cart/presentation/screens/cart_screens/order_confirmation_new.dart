@@ -103,8 +103,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew>
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
-
+        backgroundColor: fullAppBackgroundColor,
         // ADD: نخلي الـ bottom bar داخل SafeArea عشان ما يختفيش تحت حافة الشاشة
         bottomNavigationBar: SafeArea(
           top: false,
@@ -337,7 +336,7 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
                       contrrolerLogin.addressModel!.data!.address!.isNotEmpty
                   ? Container(
                       padding: const EdgeInsets.all(6),
-                      color: Colors.white,
+                      //color: Get.theme.scaffoldBackgroundColor,
                       child: ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -350,7 +349,10 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
                           Address address =
                               contrrolerLogin.addressModel!.data!.address![i];
                           return Container(
-                            color: AppColors.background,
+                            decoration: BoxDecoration(
+                              color: AppColors.colorBackgroundOrder,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                             child: Row(
                               children: [
                                 Expanded(

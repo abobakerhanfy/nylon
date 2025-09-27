@@ -26,7 +26,8 @@ class FavoriteConatainerItems extends StatelessWidget {
         padding: const EdgeInsets.all(10),
         height: 149,
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(12)),
+            color: Get.theme.scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(12)),
         child: LayoutBuilder(builder: (context, boxSize) {
           return Row(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -81,11 +82,12 @@ class FavoriteConatainerItems extends StatelessWidget {
                                 child: CircleAvatar(
                                     backgroundColor: AppColors.primaryColor,
                                     radius: 12,
-                                    child: const Center(
+                                    child: Center(
                                         child: Icon(
                                       Icons.close,
                                       size: 18,
-                                      color: Colors.white,
+                                      color: Theme.of(context)
+                                          .scaffoldBackgroundColor,
                                     ))),
                               ),
                             ],
@@ -146,7 +148,8 @@ class FavoriteConatainerItems extends StatelessWidget {
                                     horizontal: 8, vertical: 6),
                                 decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(12),
-                                    color: Colors.white,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     border: Border.all(
                                         color: AppColors.primaryColor,
                                         width: 1)),

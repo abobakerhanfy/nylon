@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+Color fullAppBackgroundColor = const Color(0xffF9F9FF);
+
 //#060505
 class AppColors {
   static Color borderBlack28 = const Color(0xff707070);

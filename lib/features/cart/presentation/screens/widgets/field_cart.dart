@@ -9,13 +9,18 @@ class CustomFiledCart extends StatelessWidget {
   final String? Function(String?)? validator;
   IconData? icon;
 
-  CustomFiledCart(
-      {super.key,
-      required this.width,
-      required this.hint,
-      required this.controller,
-      this.validator,
-      this.icon});
+  /// 🟢 جديد: علشان نقدر نغيّر اللون أو نعمل أي تحديث لحظي
+  final ValueChanged<String>? onChanged;
+
+  CustomFiledCart({
+    super.key,
+    required this.width,
+    required this.hint,
+    required this.controller,
+    this.validator,
+    this.icon,
+    this.onChanged, // ✅ إضافة هنا
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +29,7 @@ class CustomFiledCart extends StatelessWidget {
       child: TextFormField(
         validator: validator,
         controller: controller,
+        onChanged: onChanged, // ✅ تمرير الحدث هنا
         style: Theme.of(context).textTheme.bodySmall?.copyWith(
               fontSize: 16,
               color: Colors.black,
@@ -32,6 +38,7 @@ class CustomFiledCart extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         decoration: InputDecoration(
           filled: true,
+          fillColor: Colors.white,
           hintText: hint,
           hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Colors.black,

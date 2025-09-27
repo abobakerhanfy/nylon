@@ -15,66 +15,75 @@ class ContainerReplacement extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
+      onTap: () {
         Get.toNamed(NamePages.pViewDetailsOrderReturned);
       },
       child: Container(
-            width: 384,
-            height: 191,
-           margin: const EdgeInsets.symmetric(horizontal: 16),
-           padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.borderBlack28,width: 1),
-              borderRadius: BorderRadius.circular(20),
-              color: Colors.white,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            
+        width: 384,
+        height: 191,
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+            border: Border.all(color: AppColors.borderBlack28, width: 1),
+            borderRadius: BorderRadius.circular(20),
+            color: Get.theme.scaffoldBackgroundColor),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Row(
               children: [
-           Row(
-           
-            children: [
-              Container(
-                width: 69,
-                height: 65,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(100),
+                Container(
+                  width: 69,
+                  height: 65,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: SvgPicture.asset(
+                    'images/iconReturn.svg',
+                    fit: BoxFit.none,
+                  ),
                 ),
-               child: SvgPicture.asset('images/iconReturn.svg',fit: BoxFit.none,),
-              ),
-              const SizedBox(width: 10,),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('فهد احمد',style: TextStyle(fontSize: 16,fontWeight: FontWeight.normal
-                  ,color: AppColors.colorTextNew,
-                  ),),
-                  const SizedBox(height: 6,),
-                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8,vertical: 6),
-            
-             
-              
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(25),
-                  color: AppColors.colorRed 
+                const SizedBox(
+                  width: 10,
                 ),
-                child:  Text('121'.tr,style:const  TextStyle(fontSize: 11,color: Colors.white),),
-              )
-          
-                ],
-              ),
-             
-           
-            ],
-           ),
-           OrderiInformationColumnWidget(order: Order(),)
-          
-            ],),
-          
-          ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      'فهد احمد',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: AppColors.colorTextNew,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 6,
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 6),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(25),
+                          color: AppColors.colorRed),
+                      child: Text(
+                        '121'.tr,
+                        style: const TextStyle(
+                            fontSize: 11,
+                            color: Theme.of(context).scaffoldBackgroundColor),
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+            OrderiInformationColumnWidget(
+              order: Order(),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

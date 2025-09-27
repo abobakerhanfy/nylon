@@ -14,6 +14,7 @@ import '../../../../core/services/services.dart';
 abstract class HomeDataSource {
   Future<Either<StatusRequest, NewModelHome>> getData();
   Future<Either<StatusRequest, Map>> getLogo();
+  Future<Either<StatusRequest, Map>> getTheme();
 }
 
 class HomeDataSourceImpl implements HomeDataSource {
@@ -30,6 +31,16 @@ class HomeDataSourceImpl implements HomeDataSource {
       NewModelHome fullHomeModel = NewModelHome.fromJson(data);
       return right(fullHomeModel);
     });
+  }
+// HomeDataSource
+
+  @override
+  Future<Either<StatusRequest, Map>> getTheme() async {
+    var response = await _method.getData(url: AppApi.getThemeColor);
+    return response.fold(
+      (failure) => left(failure),
+      (data) => right(data),
+    );
   }
 
   @override

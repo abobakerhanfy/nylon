@@ -26,8 +26,8 @@ class _MyAddressesState extends State<MyAddresses> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: Colors.white,
-        // floatingActionButton:
+        backgroundColor:
+            Get.theme.scaffoldBackgroundColor, // floatingActionButton:
 
         // GetBuilder<ControllerAddress>(
         //   builder: (_controller) {
@@ -98,11 +98,9 @@ class _MyAddressesState extends State<MyAddresses> {
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                const Icon(
-                                  Icons.add,
-                                  size: 24,
-                                  color: Colors.white,
-                                ),
+                                Icon(Icons.add,
+                                    size: 24,
+                                    color: Get.theme.scaffoldBackgroundColor),
                                 const SizedBox(
                                   width: 5,
                                 ),

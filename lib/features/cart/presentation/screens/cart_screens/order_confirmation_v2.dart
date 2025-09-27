@@ -79,7 +79,7 @@ class _OrderConfirmationNewState extends State<OrderConfirmationNew> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Get.theme.scaffoldBackgroundColor,
         bottomNavigationBar: SizedBox(
           height: 180,
           child: Column(
@@ -293,7 +293,7 @@ class _AddressUserOnCartState extends State<AddressUserOnCart> {
                       contrrolerLogin.addressModel!.data!.address!.isNotEmpty
                   ? Container(
                       padding: const EdgeInsets.all(6),
-                      color: Colors.white,
+                      color: Get.theme.scaffoldBackgroundColor,
                       child: ListView.separated(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),

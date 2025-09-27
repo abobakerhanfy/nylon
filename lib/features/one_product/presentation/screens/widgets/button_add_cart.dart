@@ -23,14 +23,15 @@ class ButtonAddToCart extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SvgPicture.asset('images/cart.svg', color: Colors.white),
+            SvgPicture.asset('images/cart.svg',
+                color: Theme.of(context).scaffoldBackgroundColor),
             const SizedBox(width: 8),
             Text(
               '62'.tr,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.normal,
-              ),
+                    color: Get.theme.scaffoldBackgroundColor,
+                    fontWeight: FontWeight.normal,
+                  ),
             ),
           ],
         ),

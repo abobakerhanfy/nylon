@@ -190,9 +190,10 @@ class ControllerShipping extends ShippingController {
                   ),
               child: Text(
                 'موافق',
-                style: Theme.of(Get.context!).textTheme.bodySmall?.copyWith(
-                      color: Colors.white,
-                    ),
+                style: Theme.of(Get.context!)
+                    .textTheme
+                    .bodySmall
+                    ?.copyWith(color: Get.theme.scaffoldBackgroundColor),
               ),
             ),
           ),

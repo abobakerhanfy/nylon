@@ -24,7 +24,7 @@ class RegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       bottomNavigationBar: GetBuilder<ControllerLogin>(builder: (controller) {
         return Container(
           height: MediaQuery.of(context).size.height * 0.10,

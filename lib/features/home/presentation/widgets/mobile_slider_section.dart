@@ -229,7 +229,9 @@ class _MobileSliderSectionState extends State<MobileSliderSection> {
                     width: active ? 18 : 8,
                     height: 8,
                     decoration: BoxDecoration(
-                      color: active ? AppColors.primaryColor : Colors.white,
+                      color: active
+                          ? AppColors.primaryColor
+                          : Get.theme.scaffoldBackgroundColor,
                       borderRadius: BorderRadius.circular(999),
                     ),
                   ),

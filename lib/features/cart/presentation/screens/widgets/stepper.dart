@@ -98,7 +98,7 @@ class _WidgetStepperState extends State<WidgetStepper>
                         ),
                         child: Icon(
                           Icons.shopping_cart,
-                          color: Colors.white,
+                          color: Get.theme.scaffoldBackgroundColor,
                           size: 16,
                         ),
                       ),

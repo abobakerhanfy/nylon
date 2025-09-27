@@ -1,34 +1,63 @@
+// lib/core/languages/controllerLocale.dart
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
 import '../services/services.dart';
-import '../theme/text_theme.dart';
+import '../theme/text_theme.dart'; // buildBaseTextTheme()
 import 'package:nylon/controller/home/controller_home_widget.dart' as home;
 import 'package:nylon/features/category/presentation/controller/controller_one_category.dart'
     as cat;
 
 class ControllerLocal extends GetxController {
-  MyServices myServices = Get.find();
-  Locale? languages;
-  ThemeData abbThem = themeDataEn;
-  late bool isLangAr;
-  chooseLanguages({required String codeLocale, required Function() than}) {
-    Locale locale = _normalizeLocale(codeLocale); // ✅ بدل Locale(codeLocale)
+  final MyServices myServices = Get.find();
 
+  Locale? languages;
+  late ThemeData abbThem;
+  late bool isLangAr;
+
+  // ===== ثيمين أساسيين (بدون ألوان API) =====
+  ThemeData get themeDataAr => ThemeData(
+        useMaterial3: false,
+        fontFamily: 'Cairo',
+        brightness: Brightness.light,
+        textTheme: buildBaseTextTheme(),
+        scaffoldBackgroundColor: Colors.white,
+      );
+
+  ThemeData get themeDataEn => ThemeData(
+        useMaterial3: false,
+        fontFamily: 'Poppins',
+        brightness: Brightness.light,
+        textTheme: buildBaseTextTheme(),
+        scaffoldBackgroundColor: Colors.white,
+      );
+
+  // تغيير اللغة + تطبيق الثيم + ريفرش الداتا المتأثرة
+  void chooseLanguages({
+    required String codeLocale,
+    required Function() than,
+  }) async {
+    final Locale locale = _normalizeLocale(codeLocale);
+
+    // احفظ الاختيار
     myServices.sharedPreferences.setString('Lang', codeLocale);
+
+    // حدّد الثيم
     abbThem = codeLocale == 'en' ? themeDataEn : themeDataAr;
-    Get.changeTheme(abbThem);
     isLangAr = codeLocale != 'en';
 
-// ✅ خلّي re-fetch يتم بعد ما اللغة تتطبّق
-    Get.updateLocale(locale).then((_) async {
-      await _refreshHomeAfterLocale(); // ✅ أهم سطر
+    // طبّق اللغة والثيم
+    Get.updateLocale(locale);
+    Get.changeTheme(abbThem);
 
-      than();
-    });
+    // ريفرش الشاشات اللي بتسحب داتا حسب اللغة
+    await _refreshHomeAfterLocale();
+    await refreshAfterLocaleChange();
 
-    print(codeLocale);
+    // كولباكك
+    than();
+
     update();
   }
 
@@ -46,12 +75,11 @@ class ControllerLocal extends GetxController {
     return const Locale('en', 'GB');
   }
 
-  /// نعمل ريفرش للصفحات اللي بتسحب داتا حسب اللغة (من غير حذف أي كود عندك)
+  /// نعمل ريفرش للصفحات اللي بتسحب داتا حسب اللغة
   Future<void> refreshAfterLocaleChange() async {
     try {
       if (Get.isRegistered<home.ControllerHomeWidget>()) {
         final h = Get.find<home.ControllerHomeWidget>();
-        // دالة الهوم اللي بتجيب Home/full_screen — متوقع عندك
         await h.refreshHome();
         h.update();
       }
@@ -60,7 +88,6 @@ class ControllerLocal extends GetxController {
     try {
       if (Get.isRegistered<cat.ControllerOneCategory>()) {
         final c = Get.find<cat.ControllerOneCategory>();
-        // لو واقف في صفحة قسم معيّن أعد الجلب بنفس الـ id
         if ((c.categoryId ?? '').isNotEmpty) {
           c.initPage = 1;
           await c.getOneCategory(id: c.categoryId!);
@@ -79,23 +106,35 @@ class ControllerLocal extends GetxController {
 
   @override
   void onInit() {
-    String? sharedPrefLang = myServices.sharedPreferences.getString('Lang');
+    super.onInit();
+
+    final String? sharedPrefLang =
+        myServices.sharedPreferences.getString('Lang');
+
     if (sharedPrefLang == 'ar') {
-      languages = const Locale('ar');
-      initializeDateFormatting("ar");
+      languages = const Locale('ar', 'SA');
+      initializeDateFormatting('ar');
       abbThem = themeDataAr;
       isLangAr = true;
     } else if (sharedPrefLang == 'en') {
+      languages = const Locale('en', 'GB');
       initializeDateFormatting('en');
-      languages = const Locale('en');
       abbThem = themeDataEn;
       isLangAr = false;
     } else {
+      // لغة الجهاز
       final deviceCode = Get.deviceLocale?.languageCode ?? 'en';
       languages = _normalizeLocale(deviceCode);
+      final useAr = deviceCode == 'ar';
+      abbThem = useAr ? themeDataAr : themeDataEn;
+      isLangAr = useAr;
+      initializeDateFormatting(useAr ? 'ar' : 'en');
     }
-    print(languages);
-    super.onInit();
+
+    // طبّق الوضع الحالي (مهم في أول تشغيل)
+    Get.updateLocale(languages ?? const Locale('en', 'GB'));
+    Get.changeTheme(abbThem);
+
     update();
   }
 }

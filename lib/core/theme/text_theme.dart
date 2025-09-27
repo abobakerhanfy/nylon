@@ -1,113 +1,23 @@
+// lib/core/theme/text_theme.dart
 import 'package:flutter/material.dart';
-import 'package:nylon/core/theme/colors_app.dart';
 
-ThemeData themeDataEn= ThemeData(
-  fontFamily: 'en',
-  textTheme: TextTheme(
-    bodySmall: TextStyle(
-        fontWeight: FontWeight.w900,
-        color:AppColors.textBlack,
-        fontSize: 11
-    ),
-      bodyMedium:   TextStyle(
-        fontWeight: FontWeight.bold,
-        color:AppColors.textBlack,
-        fontSize: 13
-    ),
-        bodyLarge: const TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.black,
-        fontSize: 15
-    ),
-    
-    headlineSmall:  TextStyle(
-        fontWeight: FontWeight.normal,
-        color:AppColors.textColor1,
-        fontSize: 16
-    ),
-    headlineMedium:const  TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.white,
-        fontSize: 20
-    ),
-
-    headlineLarge:
-    const TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.black,
-        fontSize: 20
-    ),
-    labelSmall: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color:Colors.black,
-        fontSize: 22
-    ),
-    labelMedium: const TextStyle(
-        fontWeight: FontWeight.w400,
-        color:Colors.black,
-        fontSize: 24
-    ),
-    labelLarge: const TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.black,
-        fontSize: 26
-    ),
-  
-  ),
-
-
-);
-
-ThemeData themeDataAr= ThemeData(
-fontFamily: 'ar',
-  textTheme: TextTheme(
-    bodySmall: TextStyle(
-        fontWeight: FontWeight.w800,
-        color:AppColors.textBlack,
-        fontSize: 12
-    ),
-      bodyMedium:   TextStyle(
-        fontWeight: FontWeight.bold,
-       color:AppColors.textBlack,
-        fontSize: 13
-    ),
-        bodyLarge: const TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.black,
-        fontSize: 15
-    ),
-    
-    headlineSmall:  TextStyle(
-        fontWeight: FontWeight.normal,
-        color:AppColors.textColor1,
-        fontSize: 16
-    ),
-    headlineMedium:const  TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.white,
-        fontSize: 18
-    ),
-
-    headlineLarge:
-    const TextStyle(
-        fontWeight: FontWeight.normal,
-        color:Colors.black,
-        fontSize: 20
-    ),
-  labelSmall: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color:Colors.black,
-        fontSize: 22
-    ),
-    labelMedium: const TextStyle(
-        fontWeight: FontWeight.w400,
-        color:Colors.black,
-        fontSize: 24
-    ),
-    labelLarge: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color:Colors.black,
-        fontSize: 26
-    ),
-  ),
-);
+TextTheme buildBaseTextTheme() {
+  // بدون ألوان نهائيًا — AppThemeController.applyTo هو اللي هيفرض ألوان الـ API
+  return const TextTheme(
+    displayLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+    displayMedium: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+    displaySmall: TextStyle(fontSize: 30, fontWeight: FontWeight.w600),
+    headlineLarge: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+    headlineMedium: TextStyle(fontSize: 28, fontWeight: FontWeight.w600),
+    headlineSmall: TextStyle(fontSize: 24, fontWeight: FontWeight.w600),
+    titleLarge: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+    titleMedium: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    titleSmall: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+    bodyLarge: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+    bodyMedium: TextStyle(fontSize: 14, fontWeight: FontWeight.w400),
+    bodySmall: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+    labelLarge: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    labelMedium: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+    labelSmall: TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+  );
+}

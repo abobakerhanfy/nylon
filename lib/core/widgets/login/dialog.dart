@@ -82,10 +82,10 @@ AwesomeDialog customDialogAcation(
                         ),
                     child: Text(
                       'موافق',
-                      style:
-                          Theme.of(Get.context!).textTheme.bodySmall?.copyWith(
-                                color: Colors.white,
-                              ),
+                      style: Theme.of(Get.context!)
+                          .textTheme
+                          .bodySmall
+                          ?.copyWith(color: Get.theme.scaffoldBackgroundColor),
                     ),
                   ),
                 ),
@@ -104,10 +104,10 @@ AwesomeDialog customDialogAcation(
                         ),
                     child: Text(
                       'الغاء',
-                      style:
-                          Theme.of(Get.context!).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white,
-                              ),
+                      style: Theme.of(Get.context!)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Get.theme.scaffoldBackgroundColor),
                     ),
                   ),
                 ),

@@ -93,7 +93,12 @@ class _VerificationUserCartState extends State<VerificationUserCart> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const SizedBox(height: 140),
-                        Text('send_transfer_image'.tr),
+                        Text(
+                          'send_transfer_image'.tr,
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        ),
                         const SizedBox(height: 40),
                         ButtonOnCart(
                           width: MediaQuery.of(context).size.width * 0.80,
@@ -261,7 +266,8 @@ class _VerificationUserCartState extends State<VerificationUserCart> {
                                         "error_number".tr,
                                         snackPosition: SnackPosition.BOTTOM,
                                         backgroundColor: AppColors.primaryColor,
-                                        colorText: Colors.white,
+                                        colorText: Theme.of(context)
+                                            .scaffoldBackgroundColor,
                                       );
                                     }
                                   }),

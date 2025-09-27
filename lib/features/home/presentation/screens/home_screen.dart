@@ -26,7 +26,7 @@ class ScreenHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '67'.tr, actions: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -120,7 +120,7 @@ class CustomSearchDelegate extends SearchDelegate {
     // لو مفيش كتابة: رسالة إرشادية
     if (q.isEmpty) {
       return Container(
-        color: Colors.white,
+        color: Get.theme.scaffoldBackgroundColor,
         child: Center(child: Text("search_hint".tr)),
       );
     }
@@ -251,7 +251,7 @@ class ProductSearchResults extends StatelessWidget {
           final product = products[index]; // استخدام الكائن من النوع Products
           return Card(
             elevation: 5,
-            color: Colors.white,
+            color: Get.theme.scaffoldBackgroundColor,
             margin: const EdgeInsets.all(10),
             child: ListTile(
               contentPadding: const EdgeInsets.all(10),

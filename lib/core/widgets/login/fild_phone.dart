@@ -88,7 +88,7 @@ class CustomFieldPhone extends StatelessWidget {
                     width: 2,
                     style: BorderStyle.solid),
               ),
-              fillColor: Colors.white,
+              fillColor: Get.theme.scaffoldBackgroundColor,
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: BorderSide(

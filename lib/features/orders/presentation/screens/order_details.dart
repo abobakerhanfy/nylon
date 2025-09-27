@@ -46,10 +46,10 @@ class OrderDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       bottomNavigationBar: Container(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        color: Colors.white,
+        color: Get.theme.scaffoldBackgroundColor,
         margin: const EdgeInsets.all(10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -121,7 +121,7 @@ class OrderDetails extends StatelessWidget {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 6, horizontal: 10),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Get.theme.scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Row(
@@ -232,7 +232,8 @@ class OrderDetails extends StatelessWidget {
                                       child: Container(
                                         padding: const EdgeInsets.all(12),
                                         decoration: BoxDecoration(
-                                          color: Colors.white,
+                                          color: Theme.of(context)
+                                              .scaffoldBackgroundColor,
                                           borderRadius:
                                               BorderRadius.circular(8),
                                           border: Border.all(

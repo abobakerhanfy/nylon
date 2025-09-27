@@ -76,7 +76,7 @@ class _ViewOneProductState extends State<ViewOneProduct> {
                             SizedBox(height: boxSize.maxHeight * 0.04),
                             _buildProductRatings(context, boxSize),
                             SizedBox(height: boxSize.maxHeight * 0.01),
-                            ..._buildUserReviews(_showAllReviews),
+                            ..._buildUserReviews(_showAllReviews, context),
                             if (!_showAllReviews)
                               TextButton(
                                 onPressed: () {
@@ -198,10 +198,8 @@ class _ViewOneProductState extends State<ViewOneProduct> {
                     ),
                     child: Text(
                       "198".tr,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodySmall
-                          ?.copyWith(color: Colors.white),
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).scaffoldBackgroundColor),
                     )),
               }
             ],
@@ -276,7 +274,7 @@ class _ViewOneProductState extends State<ViewOneProduct> {
                     child: Text(
                       product.percent!,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Colors.white,
+                            color: Get.theme.scaffoldBackgroundColor,
                             fontSize: 12,
                             height: 1.5,
                           ),
@@ -345,10 +343,8 @@ class _ViewOneProductState extends State<ViewOneProduct> {
               child: Text(
                 '${"200".tr} ${_controller.productModel!.discounts!.first.quantity ?? ""} '
                 '${"199".tr} ${_controller.productModel!.discounts!.first.price ?? ""} ',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodySmall
-                    ?.copyWith(color: Colors.white),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: Theme.of(context).scaffoldBackgroundColor),
               ),
             ),
           ),
@@ -473,7 +469,7 @@ List<Map<String, dynamic>> reviews = [
     'date': DateTime.now().subtract(const Duration(days: 7)).toString()
   },
 ];
-List<Widget> _buildUserReviews(bool showAllReviews) {
+List<Widget> _buildUserReviews(bool showAllReviews, BuildContext context) {
   // إذا كانت _showAllReviews هي true، سنعرض جميع التقييمات
   final reviewsToDisplay = showAllReviews ? reviews : reviews.take(4).toList();
 
@@ -488,7 +484,8 @@ List<Widget> _buildUserReviews(bool showAllReviews) {
             radius: 15,
             backgroundColor: Colors.blue,
             child: Text(review['username']![0],
-                style: const TextStyle(color: Colors.white)),
+                style: TextStyle(
+                    color: Theme.of(context).scaffoldBackgroundColor)),
           ),
           const SizedBox(width: 8),
           Expanded(
@@ -553,226 +550,3 @@ String formatDate(String dateString) {
   return DateFormat('yyyy-MM-dd HH:mm')
       .format(dateTime); // تنسيق التاريخ والوقت
 }
-
-
-
-// class ViewOneProduct extends StatelessWidget {
-//   ViewOneProduct({super.key});
-//   final MyServices _myServices = Get.find();
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: AppColors.backgroundProduct,
-//       bottomNavigationBar: Container(
-//         padding:const  EdgeInsets.symmetric(horizontal:25,vertical: 6),
-//         height: MediaQuery.of(context).size.height*0.15,
-//         color: Colors.white,
-//         child: Column(
-//           mainAxisAlignment: MainAxisAlignment.spaceAround,
-
-//           children: [
-//             Row(
-//               mainAxisAlignment: MainAxisAlignment.start,
-//               children: [
-//                 Expanded(
-//                   child: Text(' ${'45'.tr}  20.00  ${'11'.tr} ',style:Theme.of(context).textTheme.bodySmall?.copyWith(
-//                     color: AppColors.textColor1,fontSize: 11
-//                   ),),
-//                 ),
-
-//              Row(
-//                crossAxisAlignment: CrossAxisAlignment.center,
-//                children: [
-//                  Container(
-//                    width: 29,
-//                    height: 29,
-//                    decoration: BoxDecoration(
-//                      borderRadius: BorderRadius.circular(100),
-//                      color: AppColors.primaryColor
-//                    ),
-//                    child: const Icon(Icons.add,color: Colors.white,),
-//                  ),
-//                  const Padding(
-//                    padding: EdgeInsets.symmetric(horizontal: 10),
-//                    child: Text('02',style: TextStyle(fontSize: 16,color: Colors.black),),
-//                  ),
-//                  Container(alignment: Alignment.center,
-//                    width: 29,
-//                    height: 29,
-//                    decoration: BoxDecoration(
-//                        borderRadius: BorderRadius.circular(100),
-//                        color: AppColors.grayO
-//                    ),
-//                    child: const Text('-',style: TextStyle(fontSize: 20,color: Colors.black38),),
-//                  )
-//                ],
-//              )
-//               ],
-//             ),
-//             Row(
-//               children: [
-//                 Expanded(child: InkWell(
-//                   onTap:(){
-//                     print('ddd');
-//              //  Get.toNamed(NamePages.pSignIn);
-//                   },
-//                   child: Container(
-//                     alignment: Alignment.center,
-
-//                     height: 50,
-//                     decoration: BoxDecoration(
-//                       color: AppColors.primaryColor,
-//                       borderRadius: BorderRadius.circular(12),
-//                     ),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         SvgPicture.asset('images/cart.svg',color: Colors.white,),
-//                        const  SizedBox(width: 8,),
-//                         Text('62'.tr,style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                           color: Colors.white,fontWeight: FontWeight.normal
-//                         ),),
-//                       ],
-//                     ),
-//                   ),
-//                 )),
-//               ],
-//             ),
-
-//           ],
-//         ),
-//       ),
-//       appBar: customAppBar(label: translate('صحن قصدير حلى (125حبة)','Tin dessert dish (125 pieces)')!, isBack: true),
-//       body: Center(
-//         child: Container(
-// padding: const EdgeInsets.symmetric(horizontal: 5),
-//           width: MediaQuery.of(context).size.width*0.90,
-//           height: MediaQuery.of(context).size.height,
-//           child: LayoutBuilder(
-//             builder: (context,boxSize){
-//               return ListView(
-//                 children: [
-//                   SizedBox(height: boxSize.maxHeight*0.03),
-//                   Center(
-//                     child: Stack(
-//                       alignment: _myServices.sharedPreferences.getString('Lang')=='ar'? Alignment.bottomLeft:Alignment.bottomRight,
-//                       children: [
-//                         Stack(
-//                           alignment:_myServices.sharedPreferences.getString('Lang')=='ar'? Alignment.topLeft:Alignment.topRight,
-//                           children: [
-//                             Container(
-//                               height:364,
-//                               decoration: BoxDecoration(
-//                                   borderRadius: BorderRadius.circular(12),
-//                                   border: Border.all(color: AppColors.borderBlack28,width: 0.5),
-//                               ),
-//                               child: Image.asset('images/test5.png',fit:BoxFit.fill ,),
-//                             ),
-//                             Padding(
-//                               padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 8),
-//                               child: Column(
-//                                 children: [
-//                                   InkWell(
-//                                     onTap: (){},
-//                                     child: Stack(
-//                                         alignment: Alignment.center,
-//                                         children: [
-//                                         CircleAvatar(
-//                                                 backgroundColor: Colors.grey[200]
-//                                               //AppColors.backgroundO,
-//                                             ),
-
-//                                           SvgPicture.asset('images/fov.svg',color:Colors.black38),
-
-//                                         ]
-//                                     ),
-//                                   ),
-//                                   SizedBox(height: boxSize.maxHeight*0.02,),
-//                                   InkWell(
-//                                     onTap: (){},
-//                                     child: Stack(
-//                                         alignment: Alignment.center,
-//                                         children: [
-//                                           CircleAvatar(
-//                                               backgroundColor: Colors.grey[200]
-//                                             //AppColors.backgroundO,
-//                                           ),
-
-//                                         const Icon(Icons.share_outlined,color: Colors.black38,)
-
-//                                         ]
-//                                     ),
-//                                   ),
-//                                 ],
-//                               )
-//                             )
-
-//                           ],
-//                         ),
-//                         Padding(
-//                           padding: const EdgeInsets.all(16.0),
-//                           child: AnimatedSmoothIndicator(
-//                               effect:  ExpandingDotsEffect(
-//                                   dotWidth: 10,
-//                                   dotHeight: 10,
-//                                   spacing: 8,
-//                                   radius: 15,
-//                                   activeDotColor: AppColors.primaryColor,
-//                                   dotColor: Colors.black38,
-//                               ),
-//                               curve:Curves.easeInOut,
-//                               activeIndex: 3,
-//                               count: 4
-//                           ),
-//                         ),
-//                       ],
-//                     ),
-//                   ),
-//                   SizedBox(height: boxSize.maxHeight*0.02,),
-//                   Row(
-//                     mainAxisAlignment: MainAxisAlignment.start,
-//                     children: [
-//                       Expanded(
-//                         child: Text(translate('صحن قصدير حلى (125حبة)','Tin dessert dish (125 pieces)')!,style:Theme.of(context).textTheme.bodySmall?.copyWith(
-//                           color: AppColors.textColor1,
-//                         ),overflow: TextOverflow.ellipsis,),
-//                       ),
-
-//                       Text('20.00 ${'11'.tr}',style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                         color: AppColors.primaryColor,
-//                       ),),
-//                     ],
-//                   ),
-//                   SizedBox(height: boxSize.maxHeight*0.02,),
-
-//               Column(
-//                 crossAxisAlignment: CrossAxisAlignment.start,
-//                 children: [
-//                   Text('61'.tr,style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                     color: AppColors.primaryColor,
-//                   ),),
-//                   SizedBox(height: boxSize.maxHeight*0.01,),
-//                   Container(
-//                     width: boxSize.maxWidth*0.25,
-//                     height: 1,
-//                     color: AppColors.primaryColor,
-//                   ),
-//                   SizedBox(height: boxSize.maxHeight*0.01,),
-//                   Text( translate(" هذا النص هو مثال لنص يمكن أن يستبدل في نفس المساحة، لقد تم توليد هذا النص من مولد النص العربى، حيث يمكنك أن تولد مثل هذا النص أو العديد من النصوص الأخرى إضافة إلى زيادة عدد الحروف التى يولدها التطبيق"" إذا كنت تحتاج إلى عدد أكبر من الفقرات يتيح لك مولد النص العربى زيادة عدد الفقرات كما تريد،",
-//               '"This text is an example of text that can be replaced in the same space. This text was generated from the Arabic text generator, where you can generate such text or many other texts in addition to increasing the number of letters that the application generates.""If you need a larger number of paragraphs, the Arabic text generator allows you to increase the number of paragraphs as you want,"')!
-//                   ,style: Theme.of(context).textTheme.bodySmall?.copyWith(
-//                       color: AppColors.textColor1,fontSize: 11
-//                     ),)
-//                 ],
-
-//               )
-//                 ],
-//               );
-//             },
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
-///////////////////////////////////////////////////

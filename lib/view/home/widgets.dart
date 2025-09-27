@@ -9,7 +9,7 @@ AppBar customAppBar(
     {required String label, required bool isBack, required Function onTap}) {
   ControllerCart conrollerr = Get.find();
   return AppBar(
-    backgroundColor: AppColors.background,
+    backgroundColor: fullAppBackgroundColor,
     shadowColor: AppColors.background,
     surfaceTintColor: AppColors.background,
     elevation: 2,
@@ -23,10 +23,8 @@ AppBar customAppBar(
               child: CircleAvatar(
                 radius: MediaQuery.of(Get.context!).size.width * 0.03,
                 backgroundColor: Colors.black,
-                child: const Icon(
-                  Icons.arrow_back,
-                  color: Colors.white,
-                ),
+                child: Icon(Icons.arrow_back,
+                    color: Get.theme.scaffoldBackgroundColor),
               ),
             ),
           )
@@ -66,8 +64,8 @@ AppBar customAppBar(
                             child: Center(
                               child: Text(
                                 '${controller.getTotalQuantity()}',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Get.theme.scaffoldBackgroundColor,
                                   fontSize: 12,
                                 ),
                               ),

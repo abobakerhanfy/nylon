@@ -211,4 +211,5 @@ class AppApi {
   static const String deleteCustomer =
       '$baseUrl2/customer/deleteCustomerData&api_token=';
   static const String serachProduct = '$baseUrl2/product/search&api_token=';
+  static const String getThemeColor = '$baseUrl2/app/getTheme';
 }

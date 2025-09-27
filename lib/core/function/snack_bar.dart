@@ -9,9 +9,10 @@ void showSnackBar(String message) {
       content: Center(
           child: Text(
         message,
-        style: Theme.of(Get.context!).textTheme.bodySmall?.copyWith(
-              color: Colors.white,
-            ),
+        style: Theme.of(Get.context!)
+            .textTheme
+            .bodySmall
+            ?.copyWith(color: Get.theme.scaffoldBackgroundColor),
       )),
       backgroundColor: AppColors.primaryColor,
       behavior: SnackBarBehavior.floating,

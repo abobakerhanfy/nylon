@@ -24,7 +24,7 @@ easyStepWidget(
             icon,
             size: 24,
             color: index == currentIndex || index < currentIndex
-                ? Colors.white
+                ? Theme.of(context).scaffoldBackgroundColor
                 : Colors.black,
           ))),
       customTitle: index == currentIndex || index < currentIndex

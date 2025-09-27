@@ -28,10 +28,9 @@ class ContainerMyOrder extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 16),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          border: Border.all(color: AppColors.borderBlack28, width: 1),
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
-        ),
+            border: Border.all(color: AppColors.borderBlack28, width: 1),
+            borderRadius: BorderRadius.circular(20),
+            color: Get.theme.scaffoldBackgroundColor),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -94,8 +93,9 @@ class ContainerMyOrder extends StatelessWidget {
                         ),
                         child: Text(
                           order.orderStatus! ?? '',
-                          style: const TextStyle(
-                              fontSize: 11, color: Colors.white),
+                          style: TextStyle(
+                              fontSize: 11,
+                              color: Theme.of(context).scaffoldBackgroundColor),
                         ),
                       )
                   ],

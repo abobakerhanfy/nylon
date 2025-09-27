@@ -17,7 +17,7 @@ class BottomBar extends StatelessWidget {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: controller.indexBar,
             elevation: 16,
-            backgroundColor: Colors.white,
+            backgroundColor: Get.theme.scaffoldBackgroundColor,
             selectedItemColor: Colors.black,
             unselectedItemColor: AppColors.textColor,
             showUnselectedLabels: true,
@@ -76,8 +76,8 @@ class BottomBar extends StatelessWidget {
                                   minWidth: 18, minHeight: 18),
                               child: Text(
                                 '$count',
-                                style: const TextStyle(
-                                  color: Colors.white,
+                                style: TextStyle(
+                                  color: Get.theme.scaffoldBackgroundColor,
                                   fontSize: 10,
                                   fontWeight: FontWeight.w700,
                                 ),

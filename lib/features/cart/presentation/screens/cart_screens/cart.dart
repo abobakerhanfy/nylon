@@ -1,13 +1,16 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 import 'package:nylon/core/function/hindling_data_view.dart';
 import 'package:nylon/core/function/status_request.dart';
 import 'package:nylon/core/theme/colors_app.dart';
+
 import 'package:nylon/features/cart/presentation/screens/widgets/container_cart_product.dart';
 import 'package:nylon/features/cart/presentation/screens/widgets/button_on_cart.dart';
 import 'package:nylon/features/cart/presentation/controller/controller_cart.dart';
 import 'package:nylon/features/cart/presentation/screens/widgets/field_cart.dart';
+
 import 'package:nylon/features/coupon/presentation/controller/controller_coupon.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
@@ -35,31 +38,36 @@ class StaggeredSlideIn extends StatelessWidget {
 }
 
 class _CartState extends State<Cart> {
-  final ControllerCart _controller = Get.put(ControllerCart());
-  var x = TextEditingController();
+  // استخدم الموجود إن كان مسجّل
+  final ControllerCart _controller = Get.isRegistered<ControllerCart>()
+      ? Get.find<ControllerCart>()
+      : Get.put(ControllerCart());
 
   @override
   Widget build(BuildContext context) {
+    final t = Theme.of(context);
+    final cs = t.colorScheme;
+
     return Container(
+      color: fullAppBackgroundColor, // ✅ نفس خلفية الثيم
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: LayoutBuilder(
         builder: (context, boxSize) {
           return Obx(() {
             final controller = Get.find<ControllerCart>();
             final cartModel = controller.cartModel.value;
+
             final hasUnavailableProduct = cartModel?.products?.any(
-                  (product) =>
-                      product.name?.contains('***') == true ||
-                      product.stock == false,
+                  (p) =>
+                      (p.name?.contains('***') ?? false) || (p.stock == false),
                 ) ??
                 false;
 
             return HandlingDataView(
               statusRequest:
                   controller.statusRequestGetCart ?? StatusRequest.loading,
-              widget: cartModel != null &&
-                      cartModel.products != null &&
-                      cartModel.products!.isNotEmpty
+              onRefresh: () => controller.getCart(),
+              widget: (cartModel?.products?.isNotEmpty ?? false)
                   ? Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -74,18 +82,33 @@ class _CartState extends State<Cart> {
                                   physics: const NeverScrollableScrollPhysics(),
                                   shrinkWrap: true,
                                   separatorBuilder: (context, i) => SizedBox(
-                                      height: boxSize.maxHeight * 0.01),
-                                  itemCount: cartModel.products?.length ?? 0,
+                                      height: boxSize.maxHeight * 0.012),
+                                  itemCount: cartModel!.products!.length,
                                   itemBuilder: (context, i) {
+                                    final product = cartModel.products![i];
                                     final delay =
                                         Duration(milliseconds: 100 * i);
+
+                                    // ✅ كرت المنتج: خلفية من الثيم + حدود من dividerColor
                                     return SlideInDown(
                                       duration:
                                           const Duration(milliseconds: 500),
                                       delay: delay,
-                                      child: ContainerProductCart(
-                                        products: cartModel.products![i],
-                                        onCart: false,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: cs.surface,
+                                          borderRadius:
+                                              BorderRadius.circular(14),
+                                          border: Border.all(
+                                            color: t.dividerColor,
+                                            width: 1,
+                                          ),
+                                        ),
+                                        padding: const EdgeInsets.all(10),
+                                        child: ContainerProductCart(
+                                          products: product,
+                                          onCart: false,
+                                        ),
                                       ),
                                     );
                                   },
@@ -96,11 +119,16 @@ class _CartState extends State<Cart> {
                         ),
 
                         SizedBox(height: boxSize.maxHeight * 0.02),
+
+                        // ✅ إدخال كوبون (الزر ديناميكي اللون)
                         SlideInLeft(
                           duration: const Duration(milliseconds: 500),
-                          child: ApplyCouponWidget(),
+                          child: const ApplyCouponWidget(),
                         ),
+
                         SizedBox(height: boxSize.maxHeight * 0.03),
+
+                        // سطر الوصول لهدف الشحن
                         Row(
                           children: [
                             Icon(
@@ -109,8 +137,8 @@ class _CartState extends State<Cart> {
                                   : Icons.delivery_dining,
                               size: 18,
                               color: controller.hasReachedTarget == true
-                                  ? AppColors.primaryColor
-                                  : Colors.black,
+                                  ? cs.primary
+                                  : t.iconTheme.color,
                             ),
                             const SizedBox(width: 7),
                             Flexible(
@@ -118,9 +146,7 @@ class _CartState extends State<Cart> {
                                 controller.hasReachedTarget == true
                                     ? '189'.tr
                                     : '188'.tr,
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .bodySmall
+                                style: t.textTheme.bodySmall
                                     ?.copyWith(fontSize: 12),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
@@ -128,17 +154,20 @@ class _CartState extends State<Cart> {
                             ),
                           ],
                         ),
+
                         SizedBox(height: boxSize.maxHeight * 0.03),
+
+                        // ✅ شريط التقدم لهدف 350 (لوان من الثيم)
                         CartProgressLine(
                           totalAmount: controller.remainingAmount,
                         ),
+
                         SizedBox(height: boxSize.maxHeight * 0.03),
 
-                        // 🟢 الفاتورة
+                        // ✅ زر الإتمام (ياخذ ألوان الثيم)
                         FadeInUp(
                           duration: const Duration(milliseconds: 500),
                           child: Center(
-                            // 👈 يوسّط البلوك كله أفقيًا
                             child: SizedBox(
                               height: 48,
                               child: IgnorePointer(
@@ -150,9 +179,7 @@ class _CartState extends State<Cart> {
                                     label: hasUnavailableProduct
                                         ? '214'.tr
                                         : '54'.tr,
-                                    onTap: () {
-                                      controller.plusIndexScreensCart();
-                                    },
+                                    onTap: controller.plusIndexScreensCart,
                                   ),
                                 ),
                               ),
@@ -163,16 +190,17 @@ class _CartState extends State<Cart> {
                         SizedBox(height: boxSize.maxHeight * 0.02),
                       ],
                     )
-                  : Center(
-                      child: Text(
-                        '149'.tr,
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center,
+                  : Container(
+                      color: fullAppBackgroundColor, // ✅ نفس خلفية الثيم
+
+                      child: Center(
+                        child: Text(
+                          '149'.tr,
+                          style: t.textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-              onRefresh: () {
-                controller.getCart();
-              },
             );
           });
         },
@@ -182,12 +210,19 @@ class _CartState extends State<Cart> {
 }
 
 class ApplyCouponWidget extends StatelessWidget {
-  ApplyCouponWidget({super.key});
-  final ControllerCoupon _controller = Get.put(ControllerCoupon());
+  const ApplyCouponWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<ControllerCoupon>(builder: (controller) {
+    final t = Theme.of(context);
+    final cs = t.colorScheme;
+    final ControllerCoupon controller = Get.isRegistered<ControllerCoupon>()
+        ? Get.find<ControllerCoupon>()
+        : Get.put(ControllerCoupon());
+
+    return GetBuilder<ControllerCoupon>(builder: (_) {
+      final enabled = controller.codeApplyCoupon.text.trim().isNotEmpty;
+
       return Form(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -196,31 +231,36 @@ class ApplyCouponWidget extends StatelessWidget {
               width: MediaQuery.of(context).size.width * 0.60,
               hint: '43'.tr,
               controller: controller.codeApplyCoupon,
-              validator: (value) => value!.isEmpty ? '163'.tr : null,
+              validator: (value) =>
+                  (value == null || value.isEmpty) ? '163'.tr : null,
+              // ✅ مهم لتحديث لون الزر مع الكتابة:
+              onChanged: (_) => controller.update(),
             ),
             controller.statusRequestApplyCoupon == StatusRequest.loading
-                ? Center(
-                    child: CircularProgressIndicator(
-                      color: AppColors.primaryColor,
-                    ),
-                  )
+                ? Center(child: CircularProgressIndicator(color: cs.primary))
                 : InkWell(
-                    onTap: () {
-                      controller.applyCoupon();
-                    },
-                    child: Container(
+                    onTap: enabled ? controller.applyCoupon : null,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
                       height: 45,
                       width: MediaQuery.of(context).size.width * 0.30,
                       decoration: BoxDecoration(
-                          color: AppColors.primaryColor,
-                          borderRadius: BorderRadius.circular(20)),
-                      child: Center(
-                        child: Text(
-                          '44'.tr,
-                          style: Theme.of(context)
-                              .textTheme
-                              .bodyMedium
-                              ?.copyWith(color: Colors.white, fontSize: 16),
+                        color: AppColors.primaryColor,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: enabled
+                              ? AppColors.primaryColor
+                              : AppColors.primaryColor,
+                          width: 1,
+                        ),
+                      ),
+                      alignment: Alignment.center,
+                      child: Text(
+                        '44'.tr, // كلمة "تطبيق"
+                        style: t.textTheme.bodyMedium?.copyWith(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -233,18 +273,23 @@ class ApplyCouponWidget extends StatelessWidget {
 }
 
 void showDiscountMessage(BuildContext context, double remainingAmount) {
+  final t = Theme.of(context);
+  final cs = t.colorScheme;
+
   showDialog(
     context: context,
     builder: (BuildContext context) {
       return FadeIn(
         child: AlertDialog(
-          title: Text('184'.tr, style: Theme.of(context).textTheme.bodyLarge),
+          backgroundColor: cs.surface,
+          title: Text('184'.tr, style: t.textTheme.bodyLarge),
           content: remainingAmount > 0
               ? RichText(
                   text: TextSpan(
-                    style: Theme.of(context).textTheme.bodyMedium,
+                    style: t.textTheme.bodyMedium,
                     children: [
                       TextSpan(text: '${'181'.tr} '),
+                      const TextSpan(text: ' '),
                       TextSpan(
                         text: remainingAmount.toStringAsFixed(2),
                         style: const TextStyle(fontWeight: FontWeight.bold),
@@ -254,7 +299,7 @@ void showDiscountMessage(BuildContext context, double remainingAmount) {
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4),
                           child: Image.asset(
-                            "images/riyalsymbol_compressed.png",
+                            'images/riyalsymbol_compressed.png',
                             height: 14,
                           ),
                         ),
@@ -263,19 +308,11 @@ void showDiscountMessage(BuildContext context, double remainingAmount) {
                     ],
                   ),
                 )
-              : Text(
-                  '183'.tr,
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
+              : Text('183'.tr, style: t.textTheme.bodyMedium),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text(
-                '185'.tr,
-                style: TextStyle(color: AppColors.primaryColor),
-              ),
+              onPressed: () => Navigator.pop(context),
+              child: Text('185'.tr, style: TextStyle(color: cs.primary)),
             ),
           ],
         ),
@@ -285,20 +322,27 @@ void showDiscountMessage(BuildContext context, double remainingAmount) {
 }
 
 class CartProgressLine extends StatelessWidget {
-  final double totalAmount;
+  final double totalAmount; // هنا هي المتبقي للوصول للهدف في كنترولرك
   final double targetAmount = 350.0;
 
   const CartProgressLine({super.key, required this.totalAmount});
 
   @override
   Widget build(BuildContext context) {
-    double progress = (totalAmount / targetAmount).clamp(0.0, 1.0);
+    final t = Theme.of(context);
+    final cs = t.colorScheme;
+
+    // لو totalAmount = المتبقي → التقدم = (الهدف - المتبقي) / الهدف
+    final remaining = totalAmount;
+    final progress = (targetAmount - remaining) / targetAmount;
+    final clamped = progress.clamp(0.0, 1.0);
 
     return LinearPercentIndicator(
-      lineHeight: 5.0,
-      percent: progress,
-      backgroundColor: Colors.green,
-      progressColor: Colors.grey.shade300,
+      lineHeight: 6.0,
+      percent: clamped.toDouble(),
+      barRadius: const Radius.circular(999),
+      backgroundColor: t.dividerColor.withOpacity(0.35),
+      progressColor: cs.primary,
       animation: true,
       animationDuration: 500,
     );

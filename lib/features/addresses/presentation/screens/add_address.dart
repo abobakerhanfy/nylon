@@ -26,7 +26,7 @@ class AddAddress extends StatelessWidget {
     //   Get.find<ControllerPayment>().getZoneId();
     // }
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
       bottomNavigationBar: GetBuilder<ControllerAddress>(
           init: ControllerAddress(),
           builder: (controller) {

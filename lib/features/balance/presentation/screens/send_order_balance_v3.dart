@@ -49,7 +49,7 @@ class _SendOrderBalanceState extends State<SendOrderBalance> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       bottomNavigationBar: SizedBox(
         height: 180,
         child: GetBuilder<ControllerBalance>(builder: (controller) {

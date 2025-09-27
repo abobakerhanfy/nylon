@@ -17,7 +17,7 @@ class MyCoupons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: '130'.tr),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
@@ -91,7 +91,8 @@ class CouponsWidget extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       width: MediaQuery.of(context).size.width * 0.80,
       decoration: BoxDecoration(
-          color: Colors.white, borderRadius: BorderRadius.circular(16)),
+          color: Get.theme.scaffoldBackgroundColor,
+          borderRadius: BorderRadius.circular(16)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

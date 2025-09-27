@@ -13,6 +13,7 @@ import 'package:nylon/features/category/presentation/controller/controller_one_c
 import 'package:nylon/features/favorites/presentation/screens/widgets/icon_add_favorite.dart';
 import 'package:nylon/features/home/presentation/screens/widgets/products_container_home.dart';
 import 'package:nylon/view/home/widgets.dart';
+import 'package:get/get.dart';
 
 class ViewOneCategory extends StatefulWidget {
   const ViewOneCategory({super.key});
@@ -63,7 +64,7 @@ class _ViewOneCategoryState extends State<ViewOneCategory> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(kToolbarHeight),
         child: GetBuilder<ControllerOneCategory>(
@@ -116,7 +117,8 @@ class _ViewOneCategoryState extends State<ViewOneCategory> {
                               width: boxSize.maxWidth,
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color:
+                                    Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -177,7 +179,8 @@ class _ViewOneCategoryState extends State<ViewOneCategory> {
                                   ),
                                   PopupMenuButton<String>(
                                     padding: EdgeInsets.zero,
-                                    color: Colors.white,
+                                    color: Theme.of(context)
+                                        .scaffoldBackgroundColor,
                                     shadowColor: AppColors.primaryColor,
                                     icon: Icon(Icons.swap_vert,
                                         color: AppColors.textColor1, size: 27),
@@ -206,7 +209,8 @@ class _ViewOneCategoryState extends State<ViewOneCategory> {
                             //   padding:const  EdgeInsets.all(8),
                             //   margin:const EdgeInsets.all(8),
                             //   decoration: BoxDecoration(
-                            //       color: Colors.white,
+                            //       color: Theme.of(context).scaffoldBackgroundColor
+
                             //     borderRadius: BorderRadius.circular(12)
                             //   ),
                             //   child: Row(
@@ -356,7 +360,8 @@ class ViewProductsOnCatg extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white, borderRadius: BorderRadius.circular(8)),
+            color: Theme.of(context).scaffoldBackgroundColor,
+            borderRadius: BorderRadius.circular(8)),
         child: LayoutBuilder(builder: (context, boxSize) {
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -369,8 +374,8 @@ class ViewProductsOnCatg extends StatelessWidget {
 
               Container(
                 height: boxSize.maxHeight * 0.55,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
+                decoration: BoxDecoration(
+                  color: Get.theme.scaffoldBackgroundColor,
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(8),
                       topRight: Radius.circular(8)),

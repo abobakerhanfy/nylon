@@ -29,7 +29,7 @@ class _MyprofileState extends State<Myprofile> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       appBar: customAppBarTow(title: 'title'),
       body: GetBuilder<ControllerUser>(
           init: ControllerUser(),

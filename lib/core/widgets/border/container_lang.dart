@@ -28,7 +28,7 @@ class ContainerLang extends StatelessWidget {
         width: boxSize.maxWidth * 0.40,
         height: 50,
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Get.theme.scaffoldBackgroundColor,
           border: Border.all(color: AppColors.borderBlack28, width: 1),
           borderRadius: BorderRadius.circular(20),
         ),
@@ -36,6 +36,7 @@ class ContainerLang extends StatelessWidget {
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                   fontWeight: FontWeight.normal,
                   color: AppColors.borderBlack28,
+                  fontSize: 20,
                 )),
       ),
     );

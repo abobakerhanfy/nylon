@@ -25,7 +25,7 @@ class _AddAddressShippingState extends State<AddAddressShipping> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: fullAppBackgroundColor,
       bottomNavigationBar: Container(
         height: MediaQuery.of(context).size.height * 0.10,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),

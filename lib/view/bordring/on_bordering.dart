@@ -1,4 +1,3 @@
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -10,8 +9,8 @@ import 'package:nylon/core/widgets/logo_widget.dart';
 import '../../core/theme/colors_app.dart';
 import 'package:animate_do/animate_do.dart';
 
-class Bordering  extends StatefulWidget {
-  const Bordering ({super.key});
+class Bordering extends StatefulWidget {
+  const Bordering({super.key});
 
   @override
   State<Bordering> createState() => _BorderingState();
@@ -19,21 +18,21 @@ class Bordering  extends StatefulWidget {
 
 class _BorderingState extends State<Bordering> {
   Timer? _timer;
-  Duration  duration = const  Duration(seconds: 2);
-  Future timerBordering()async {
-print('start');
-    _timer = Timer.periodic(const Duration(seconds:4), (timer) async {
+  Duration duration = const Duration(seconds: 2);
+  Future timerBordering() async {
+    print('start');
+    _timer = Timer.periodic(const Duration(seconds: 4), (timer) async {
       Get.offNamed(NamePages.pBottomBar);
     });
-
   }
+
   @override
   void initState() {
     timerBordering();
     super.initState();
   }
 
-@override
+  @override
   void dispose() {
     _timer!.cancel();
     print('end');
@@ -43,9 +42,9 @@ print('start');
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body:BounceInRight(
-        child:  SizedBox(
+      backgroundColor: Get.theme.scaffoldBackgroundColor,
+      body: BounceInRight(
+        child: SizedBox(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
           child: LayoutBuilder(
@@ -80,44 +79,45 @@ print('start');
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Bounce(
-                          duration: duration,
-                          child:logoWidget()
-                        ),
-                       Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 20),
-                                child:  BounceInUp(
-                                  duration: duration,
-                                  child: Text(
-                                    "13".tr,
-                                    style: TextStyle(
-                                      color: AppColors.textBorderColor,
-                                      fontSize: 30,
-                                      fontFamily: 'ar',
-                                      fontWeight: FontWeight.normal,
-                                    ),
-                                  ),
-                                ),),
-                              Center(
-                                child: BounceInDown(
-                                  duration: duration,
-                                  child: Text(
-                                    "14".tr,
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: AppColors.primaryColor,
-                                      fontWeight: FontWeight.normal,
-                                      fontSize: 20,
-                                    ),
-                                    textAlign: TextAlign.center,
+                        Bounce(duration: duration, child: logoWidget()),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: BounceInUp(
+                                duration: duration,
+                                child: Text(
+                                  "13".tr,
+                                  style: TextStyle(
+                                    color: AppColors.textBorderColor,
+                                    fontSize: 30,
+                                    fontFamily: 'ar',
+                                    fontWeight: FontWeight.normal,
                                   ),
                                 ),
                               ),
-                              SizedBox(height: boxSize.maxHeight * 0.10),
-                            ],
-                          ),
+                            ),
+                            Center(
+                              child: BounceInDown(
+                                duration: duration,
+                                child: Text(
+                                  "14".tr,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyMedium
+                                      ?.copyWith(
+                                        color: AppColors.primaryColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 20,
+                                      ),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                            SizedBox(height: boxSize.maxHeight * 0.10),
+                          ],
+                        ),
                       ],
                     ),
                   ),

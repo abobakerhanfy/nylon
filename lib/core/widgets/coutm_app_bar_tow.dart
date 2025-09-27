@@ -7,7 +7,7 @@ import 'package:nylon/features/home/presentation/controller/home_controller.dart
 
 AppBar customAppBarTow({required String title, List<Widget>? actions}) {
   return AppBar(
-    backgroundColor: AppColors.background,
+    backgroundColor: fullAppBackgroundColor,
     centerTitle: true,
     shadowColor: AppColors.background,
     surfaceTintColor: AppColors.background,
